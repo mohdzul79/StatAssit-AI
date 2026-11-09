@@ -1,0 +1,8 @@
+{
+  "name": "StatAssist AI",
+  "description": "Intelligent web-based statistical assistant automating quantitative data analysis, hypothesis testing, and APA 7th edition manuscript reporting for researchers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
