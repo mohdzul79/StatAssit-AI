@@ -1,32 +1,14 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  getDocFromServer,
-  collection,
-  getDocs,
-  deleteDoc,
-  onSnapshot,
-} from 'firebase/firestore';
-import firebaseConfig from '../../firebase-applet-config.json';
+// Open Access local persistence replacing Firebase
 import { UserProfile } from '../types/user';
 import { Dataset, StatisticalResult } from '../types/stats';
 
-// Initialize Firebase App
-export const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+// Lightweight dummy Auth and DB objects for zero-dependency open access
+export const auth = {
+  currentUser: null as { uid?: string; email?: string | null; displayName?: string | null; emailVerified?: boolean; isAnonymous?: boolean; tenantId?: string | null; providerData?: any[] } | null,
+};
 
-// CRITICAL: Initialize Firestore using the firestoreDatabaseId from config if provided
-export const db = (firebaseConfig as any).firestoreDatabaseId
-  ? getFirestore(app, (firebaseConfig as any).firestoreDatabaseId)
-  : getFirestore(app);
+export const db = {};
 
-// Initialize Firebase Auth
-export const auth = getAuth(app);
-
-// Operation types for Firestore security error diagnosis
 export enum OperationType {
   CREATE = 'create',
   UPDATE = 'update',
@@ -36,183 +18,89 @@ export enum OperationType {
   WRITE = 'write',
 }
 
-export interface FirestoreErrorInfo {
-  error: string;
-  operationType: OperationType;
-  path: string | null;
-  authInfo: {
-    userId?: string | null;
-    email?: string | null;
-    emailVerified?: boolean | null;
-    isAnonymous?: boolean | null;
-    tenantId?: string | null;
-    providerInfo?: {
-      providerId?: string | null;
-      email?: string | null;
-    }[];
-  };
+export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null): never {
+  console.error('Storage Error: ', error, operationType, path);
+  throw error;
 }
 
-/**
- * Mandatory Firestore error handler conforming to skill specification
- */
-export function handleFirestoreError(
-  error: unknown,
-  operationType: OperationType,
-  path: string | null
-): never {
-  const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo:
-        auth.currentUser?.providerData?.map((provider) => ({
-          providerId: provider.providerId,
-          email: provider.email,
-        })) || [],
-    },
-    operationType,
-    path,
-  };
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
+export async function testConnection(): Promise<void> {
+  // Open access mode: local state ready
 }
 
-/**
- * Validate Connection to Firestore on boot
- */
-export async function testConnection() {
-  try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error('Please check your Firebase configuration.');
-    }
-  }
-}
+const LOCAL_STORAGE_USERS_KEY = 'statassist_open_access_users';
+const LOCAL_STORAGE_DATASETS_KEY = 'statassist_open_access_datasets';
+const LOCAL_STORAGE_ANALYSES_KEY = 'statassist_open_access_analyses';
 
-// Run initial connection test safely
-testConnection().catch(() => {
-  // Silent catch for initial unauthenticated test doc
-});
-
-/**
- * Persist user profile to Firestore
- */
 export async function syncUserProfileToFirestore(profile: UserProfile): Promise<void> {
-  const path = `users/${profile.id}`;
   try {
-    await setDoc(
-      doc(db, 'users', profile.id),
-      {
-        id: profile.id,
-        email: profile.email,
-        name: profile.name,
-        role: profile.systemRole || 'researcher',
-        institution: profile.institution || 'Quantitative Research Institute',
-        department: profile.department || 'Faculty of Social Sciences',
-        updatedAt: new Date().toISOString(),
-      },
-      { merge: true }
-    );
-  } catch (error) {
-    console.warn('Could not sync user profile to Firestore:', error);
+    const raw = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
+    const users = raw ? JSON.parse(raw) : {};
+    users[profile.id] = {
+      ...profile,
+      updatedAt: new Date().toISOString(),
+    };
+    localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(users));
+  } catch (e) {
+    console.debug('Open access local sync:', e);
   }
 }
 
-/**
- * Load user profile from Firestore
- */
 export async function loadUserProfileFromFirestore(userId: string): Promise<Partial<UserProfile> | null> {
-  const path = `users/${userId}`;
   try {
-    const snap = await getDoc(doc(db, 'users', userId));
-    if (snap.exists()) {
-      return snap.data() as Partial<UserProfile>;
-    }
-    return null;
-  } catch (error) {
-    console.warn('Could not fetch user profile from Firestore:', error);
+    const raw = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
+    if (!raw) return null;
+    const users = JSON.parse(raw);
+    return users[userId] || null;
+  } catch (e) {
     return null;
   }
 }
 
-/**
- * Persist user dataset to Firestore
- */
 export async function saveUserDatasetToFirestore(userId: string, dataset: Dataset): Promise<void> {
-  const path = `users/${userId}/datasets/${dataset.id}`;
   try {
-    await setDoc(
-      doc(db, 'users', userId, 'datasets', dataset.id),
-      {
-        id: dataset.id,
-        userId,
-        name: dataset.name,
-        description: dataset.description || '',
-        rowCount: dataset.data.length,
-        colCount: dataset.columns.length,
-        columns: dataset.columns,
-        data: dataset.data.slice(0, 500), // Protect payload size
-        updatedAt: new Date().toISOString(),
-      },
-      { merge: true }
-    );
-  } catch (error) {
-    console.warn('Could not sync dataset to Firestore:', error);
+    const raw = localStorage.getItem(LOCAL_STORAGE_DATASETS_KEY);
+    const datasets = raw ? JSON.parse(raw) : {};
+    if (!datasets[userId]) datasets[userId] = [];
+    const idx = datasets[userId].findIndex((d: Dataset) => d.id === dataset.id);
+    if (idx >= 0) {
+      datasets[userId][idx] = dataset;
+    } else {
+      datasets[userId].unshift(dataset);
+    }
+    localStorage.setItem(LOCAL_STORAGE_DATASETS_KEY, JSON.stringify(datasets));
+  } catch (e) {
+    console.debug('Local dataset storage:', e);
   }
 }
 
-/**
- * Load user datasets from Firestore
- */
 export async function loadUserDatasetsFromFirestore(userId: string): Promise<Dataset[]> {
-  const path = `users/${userId}/datasets`;
   try {
-    const querySnap = await getDocs(collection(db, 'users', userId, 'datasets'));
-    const list: Dataset[] = [];
-    querySnap.forEach((docSnap) => {
-      list.push(docSnap.data() as Dataset);
-    });
-    return list;
-  } catch (error) {
-    console.warn('Could not load user datasets from Firestore:', error);
+    const raw = localStorage.getItem(LOCAL_STORAGE_DATASETS_KEY);
+    if (!raw) return [];
+    const datasets = JSON.parse(raw);
+    return datasets[userId] || [];
+  } catch (e) {
     return [];
   }
 }
 
-/**
- * Persist analysis result to Firestore
- */
 export async function saveAnalysisResultToFirestore(
   userId: string,
   result: StatisticalResult,
   datasetName: string
 ): Promise<void> {
-  const id = `res_${Date.now()}`;
-  const resObj = result as any;
   try {
-    await setDoc(doc(db, 'users', userId, 'analyses', id), {
-      id,
-      userId,
-      testType: resObj.testType || 'statistical_test',
-      testName: resObj.testName || 'Inferential Test',
+    const raw = localStorage.getItem(LOCAL_STORAGE_ANALYSES_KEY);
+    const analyses = raw ? JSON.parse(raw) : {};
+    if (!analyses[userId]) analyses[userId] = [];
+    analyses[userId].unshift({
+      id: `res_${Date.now()}`,
       datasetName,
-      result: {
-        testName: resObj.testName || 'Statistical Result',
-        statistic: resObj.statistic ?? resObj.fValue ?? resObj.tValue ?? null,
-        pValue: resObj.pValue ?? null,
-        df: resObj.df ?? null,
-        effectSize: resObj.effectSize ?? null,
-        conclusion: resObj.conclusion ?? '',
-      },
+      result,
       createdAt: new Date().toISOString(),
     });
-  } catch (error) {
-    console.warn('Could not save analysis result to Firestore:', error);
+    localStorage.setItem(LOCAL_STORAGE_ANALYSES_KEY, JSON.stringify(analyses));
+  } catch (e) {
+    console.debug('Local analysis storage:', e);
   }
 }

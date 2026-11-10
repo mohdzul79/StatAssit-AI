@@ -653,7 +653,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                 showFeedback(`Sign of Error: ${datasetValidation.reason}. Please fill up required data.`, true);
                 const tableEl = document.getElementById('dataset-data-table');
                 if (tableEl) {
-                  tableEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  tableEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
                 return;
               }
@@ -807,7 +807,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                     if (datasetValidation.missingResearchQuestion) {
                       const rqEl = document.getElementById('research-questions-section');
                       if (rqEl) {
-                        rqEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        rqEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                       }
                       if (onOpenAddRqModal) {
                         onOpenAddRqModal();
@@ -815,7 +815,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                     } else {
                       const tableEl = document.getElementById('dataset-data-table');
                       if (tableEl) {
-                        tableEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        tableEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                       }
                     }
                     return;

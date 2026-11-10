@@ -10,25 +10,17 @@ import { ApaGuideModal } from './components/ApaGuideModal';
 import { UserGuideModal } from './components/UserGuideModal';
 import { ResearchQuestionModal } from './components/ResearchQuestionModal';
 import { SelectingTestView } from './components/SelectingTestView';
-import { FeedbackModal } from './components/FeedbackModal';
-import { AuthModal } from './components/AuthModal';
-import { UserProfileModal } from './components/UserProfileModal';
 import { NotebookLMSyncModal } from './components/NotebookLMSyncModal';
-import { AdminCmsModal } from './components/AdminCmsModal';
 import { LandingPage } from './components/LandingPage';
-import { UsabilityTestModal } from './components/UsabilityTestModal';
 import { PublishChecklistModal } from './components/PublishChecklistModal';
 import { GmailModal } from './components/GmailModal';
 import { GoogleDriveModal } from './components/GoogleDriveModal';
 import { DonateModal } from './components/DonateModal';
 import { IpCopyrightModal } from './components/IpCopyrightModal';
-import { getEffectiveGoogleFormUrl } from './data/usabilityTestData';
-import { ClipboardCheck, ExternalLink, CheckSquare, Sparkles, ShieldCheck } from 'lucide-react';
+import { Sparkles, ShieldCheck } from 'lucide-react';
 
-import { UserProfile, loadStoredUserProfile, saveStoredUserProfile, MOHDZUL_ADMIN_PROFILE } from './types/user';
-import { logOutFromFirebase, firebaseUserToUserProfile } from './services/firebaseAuth';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth, syncUserProfileToFirestore, saveUserDatasetToFirestore, saveAnalysisResultToFirestore } from './services/firebase';
+import { UserProfile, MOHDZUL_ADMIN_PROFILE } from './types/user';
+import { saveUserDatasetToFirestore, saveAnalysisResultToFirestore } from './services/firebase';
 import { TEST_STUDY_PRESETS } from './utils/testStudyPresets';
 import { validateDatasetForTest } from './utils/datasetValidation';
 
@@ -111,13 +103,7 @@ export default function App() {
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isUserGuideOpen, setIsUserGuideOpen] = useState(false);
-  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
-  const [isAdminCmsOpen, setIsAdminCmsOpen] = useState(false);
-  const [isUsabilityTestOpen, setIsUsabilityTestOpen] = useState(false);
   const [isPublishChecklistOpen, setIsPublishChecklistOpen] = useState(false);
-  const [usabilityModalInitialTab, setUsabilityModalInitialTab] = useState<
-    'survey' | 'form-sheet' | 'google-form' | 'script' | 'instrument' | 'responses'
-  >('google-form');
   const [isNotebookLMSyncOpen, setIsNotebookLMSyncOpen] = useState(false);
   const [isGmailOpen, setIsGmailOpen] = useState(false);
   const [isGoogleDriveOpen, setIsGoogleDriveOpen] = useState(false);
@@ -125,16 +111,9 @@ export default function App() {
   const [isIpProtectionOpen, setIsIpProtectionOpen] = useState(false);
   const [showQuickstartBanner, setShowQuickstartBanner] = useState(true);
 
-  // User Authentication & Fundamental Profile state
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
-    const loaded = loadStoredUserProfile();
-    return loaded.isLoggedIn ? loaded.user : null;
-  });
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
-    return loadStoredUserProfile().isLoggedIn;
-  });
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  // Open Access Global Profile state (100% Free & Open Access)
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(MOHDZUL_ADMIN_PROFILE);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
 
   // Pre-set study notification banner state for Dataset view
   const [presetStudyBanner, setPresetStudyBanner] = useState<{
@@ -153,29 +132,21 @@ export default function App() {
   const handleLoginSuccess = (user: UserProfile) => {
     setCurrentUser(user);
     setIsLoggedIn(true);
-    saveStoredUserProfile(user, true);
-    syncUserProfileToFirestore(user);
     if (user.preferences?.defaultAlpha) {
       setAlphaLevel(user.preferences.defaultAlpha);
     }
-    // Selecting Test is Priority 1 and the default page after login
     setActiveTab('wizard');
-    setIsAdminCmsOpen(false);
   };
 
-  // Sync Firebase Auth session on boot
+  // Ensure page always views at top on initial load and whenever switching tabs/views
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
-      if (fbUser) {
-        const profile = firebaseUserToUserProfile(fbUser, 'google');
-        setCurrentUser(profile);
-        setIsLoggedIn(true);
-        saveStoredUserProfile(profile, true);
-        syncUserProfileToFirestore(profile);
+    if (typeof window !== 'undefined') {
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = 'manual';
       }
-    });
-    return () => unsubscribe();
-  }, []);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, [activeTab]);
 
   // Ensure PayPal SDK with hosted-buttons & USD currency is loaded
   useEffect(() => {
@@ -282,22 +253,7 @@ export default function App() {
     applyPresetStudyForTest(test, true);
   };
 
-  const handleSignOut = () => {
-    logOutFromFirebase();
-    setIsLoggedIn(false);
-    setCurrentUser(null);
-    saveStoredUserProfile(null, false);
-    setIsAdminCmsOpen(false);
-    setActiveTab('landing');
-  };
 
-  const handleUpdateUserProfile = (updatedUser: UserProfile) => {
-    setCurrentUser(updatedUser);
-    saveStoredUserProfile(updatedUser, true);
-    if (updatedUser.preferences?.defaultAlpha) {
-      setAlphaLevel(updatedUser.preferences.defaultAlpha);
-    }
-  };
 
   // Dataset management handlers for preloaded & uploaded studies
   const handleSelectDataset = (ds: Dataset) => {
@@ -694,18 +650,6 @@ export default function App() {
 
   const isDatasetComplete = datasetValidation.isComplete;
 
-  const handleGoogleFormLinkClick = (e: React.MouseEvent) => {
-    const url = getEffectiveGoogleFormUrl();
-    // If a custom or official Google Form has been created (not placeholder or forms.new)
-    if (url && !url.includes('StatAssistAI_Usability_Benchmark') && url !== 'https://forms.new') {
-      return; // allow browser to open real form
-    }
-    // Intercept to prevent 404 page and open Google Form Sheet Database manager in modal
-    e.preventDefault();
-    setUsabilityModalInitialTab('form-sheet');
-    setIsUsabilityTestOpen(true);
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       {/* Top Bar Navigation (Workspace Stages) */}
@@ -713,9 +657,6 @@ export default function App() {
         <Navbar
           activeTab={activeTab}
           setActiveTab={(tab) => {
-            if (!isLoggedIn && tab !== 'landing') {
-              handleLoginSuccess(MOHDZUL_ADMIN_PROFILE);
-            }
             if ((tab === 'analysis' || tab === 'apa-report') && !isDatasetComplete) {
               return;
             }
@@ -723,9 +664,6 @@ export default function App() {
           }}
           onOpenApaGuide={() => setIsGuideOpen(true)}
           onOpenUserGuide={() => setIsUserGuideOpen(true)}
-          onOpenFeedback={() => setIsFeedbackOpen(true)}
-          onOpenAdminCms={() => setIsAdminCmsOpen(true)}
-          onOpenUsabilityTest={() => setIsUsabilityTestOpen(true)}
           onOpenPublishChecklist={() => setIsPublishChecklistOpen(true)}
           onOpenGmail={() => setIsGmailOpen(true)}
           onOpenGoogleDrive={() => setIsGoogleDriveOpen(true)}
@@ -734,24 +672,14 @@ export default function App() {
           isDatasetComplete={isDatasetComplete}
           currentUser={currentUser}
           isLoggedIn={isLoggedIn}
-          onOpenLogin={() => setIsLoginModalOpen(true)}
-          onDirectLogin={handleLoginSuccess}
-          onOpenProfile={() => setIsProfileModalOpen(true)}
         />
       )}
 
       {activeTab === 'landing' ? (
         <LandingPage
           onEnterWorkspace={(tab = 'wizard') => {
-            if (!isLoggedIn) {
-              handleLoginSuccess(MOHDZUL_ADMIN_PROFILE);
-            }
             setActiveTab(tab);
           }}
-          onLoginSuccess={handleLoginSuccess}
-          isLoggedIn={isLoggedIn}
-          currentUser={currentUser}
-          onOpenAdminCms={() => setIsAdminCmsOpen(true)}
         />
       ) : (
         <>
@@ -887,12 +815,7 @@ export default function App() {
               onExecuteAnalysis={() => {
                 executeAnalysis();
                 setActiveTab('analysis');
-                setTimeout(() => {
-                  const el = document.getElementById('results-display-section');
-                  if (el) {
-                    el.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }, 100);
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
               }}
             />
 
@@ -941,7 +864,6 @@ export default function App() {
                   <ApaManuscriptGenerator
                     result={currentResult}
                     defaultResearchQuestion={activeResearchQuestion?.question || ''}
-                    authorProfile={currentUser}
                     onOpenNotebookLMSync={() => setIsNotebookLMSyncOpen(true)}
                   />
                 </div>
@@ -983,51 +905,6 @@ export default function App() {
       </footer>
 
       {/* Modals */}
-      <AuthModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
-      />
-
-      {currentUser && (
-        <UserProfileModal
-          isOpen={isProfileModalOpen}
-          onClose={() => setIsProfileModalOpen(false)}
-          user={currentUser}
-          onUpdateUser={handleUpdateUserProfile}
-          onSignOut={handleSignOut}
-          onSwitchProfile={(profile) => {
-            handleLoginSuccess(profile);
-          }}
-          onOpenAdminCms={() => setIsAdminCmsOpen(true)}
-        />
-      )}
-
-      <FeedbackModal
-        isOpen={isFeedbackOpen}
-        onClose={() => setIsFeedbackOpen(false)}
-        defaultEmail={currentUser?.email || ''}
-        defaultName={currentUser?.name || ''}
-        defaultOrganization={currentUser?.institution || ''}
-        adminEmail="mohdzul@gmail.com"
-        onOpenAdminCms={() => setIsAdminCmsOpen(true)}
-        currentTest={selectedTest}
-        datasetStats={{
-          hasData: currentDataset.data.length > 0,
-          rowCount: currentDataset.data.length,
-          colCount: currentDataset.columns.length,
-        }}
-      />
-
-      <AdminCmsModal
-        isOpen={isAdminCmsOpen}
-        onClose={() => setIsAdminCmsOpen(false)}
-        adminEmail="mohdzul@gmail.com"
-        onSelectUserToImpersonate={(member) => {
-          // Allow administrator to preview platform as this member if desired
-          setIsAdminCmsOpen(false);
-        }}
-      />
 
       <UserGuideModal
         isOpen={isUserGuideOpen}
@@ -1099,15 +976,6 @@ export default function App() {
         }}
       />
 
-      {/* Usability Test & Google Form Evaluation Modal */}
-      <UsabilityTestModal
-        isOpen={isUsabilityTestOpen}
-        onClose={() => setIsUsabilityTestOpen(false)}
-        defaultUserName={currentUser?.name || ''}
-        defaultUserEmail={currentUser?.email || ''}
-        defaultRole={currentUser?.title || 'Academic Researcher'}
-        initialTab={usabilityModalInitialTab}
-      />
 
       {/* Publication Readiness Checklist & Google Keep/Tasks Sync Modal */}
       <PublishChecklistModal

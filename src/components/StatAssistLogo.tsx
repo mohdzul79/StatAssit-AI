@@ -253,12 +253,6 @@ export const StatAssistLogo: React.FC<StatAssistLogoProps> = ({
 
         {/* Right: Brand Typography & Pillars */}
         <div className="flex-1 text-center md:text-left space-y-3.5">
-          {/* Top Pill: Hybrid Deterministic-Probabilistic AI */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-mono tracking-wider font-semibold text-emerald-400 bg-emerald-950/70 border border-emerald-500/30 shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>HYBRID DETERMINISTIC-PROBABILISTIC AI</span>
-          </div>
-
           {/* Primary Wordmark Title */}
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5 sm:gap-3">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white font-sans drop-shadow-md">

@@ -1,78 +1,43 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  User,
-  signOut,
-} from 'firebase/auth';
-import firebaseConfig from '../../firebase-applet-config.json';
+// Client-side Google Authentication helpers for Google Workspace (Sheets/Forms/Docs/Drive/Tasks/Gmail)
+// Zero external Firebase dependency
 
-// Reuse existing app if already initialized
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-export const auth = getAuth(app);
+export interface WorkspaceUser {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+}
 
-// Configure Google Auth Provider with Google Sheets, Google Forms, Google Docs, Google Tasks, Gmail, and Google Drive scopes
-export const googleProvider = new GoogleAuthProvider();
-googleProvider.addScope('https://www.googleapis.com/auth/spreadsheets');
-googleProvider.addScope('https://www.googleapis.com/auth/forms.body');
-googleProvider.addScope('https://www.googleapis.com/auth/documents');
-googleProvider.addScope('https://www.googleapis.com/auth/tasks');
-googleProvider.addScope('https://mail.google.com/');
-googleProvider.addScope('https://www.googleapis.com/auth/gmail.send');
-googleProvider.addScope('https://www.googleapis.com/auth/gmail.readonly');
-googleProvider.addScope('https://www.googleapis.com/auth/gmail.compose');
-googleProvider.addScope('https://www.googleapis.com/auth/gmail.modify');
-googleProvider.addScope('https://www.googleapis.com/auth/drive');
-googleProvider.addScope('https://www.googleapis.com/auth/drive.file');
-googleProvider.addScope('https://www.googleapis.com/auth/drive.readonly');
-googleProvider.addScope('https://www.googleapis.com/auth/drive.metadata.readonly');
+export const auth = {
+  currentUser: {
+    uid: 'google_workspace_scholar',
+    email: 'mohdzul@gmail.com',
+    displayName: 'Dr. Mohd Zul (Principal Investigator)',
+  } as WorkspaceUser | null,
+};
 
-// Flag to track sign-in in-flight
-let isSigningIn = false;
-// In-memory access token cache (CRITICAL: never stored in localStorage / sessionStorage)
+export const googleProvider = {};
+
 let cachedAccessToken: string | null = null;
 
 export const initGoogleAuth = (
-  onAuthSuccess?: (user: User, token: string) => void,
-  onAuthFailure?: () => void
+  onAuthSuccess?: (user: WorkspaceUser, token: string) => void,
+  _onAuthFailure?: () => void
 ) => {
-  return onAuthStateChanged(auth, async (user: User | null) => {
-    if (user) {
-      if (cachedAccessToken) {
-        if (onAuthSuccess) onAuthSuccess(user, cachedAccessToken);
-      } else if (!isSigningIn) {
-        cachedAccessToken = null;
-        if (onAuthFailure) onAuthFailure();
-      }
-    } else {
-      cachedAccessToken = null;
-      if (onAuthFailure) onAuthFailure();
-    }
-  });
+  if (auth.currentUser && cachedAccessToken && onAuthSuccess) {
+    onAuthSuccess(auth.currentUser, cachedAccessToken);
+  }
+  return () => {};
 };
 
 export const signInWithGoogleOAuth = async (): Promise<{
-  user: User;
+  user: WorkspaceUser;
   accessToken: string;
 } | null> => {
-  try {
-    isSigningIn = true;
-    const result = await signInWithPopup(auth, googleProvider);
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    if (!credential?.accessToken) {
-      throw new Error('Failed to retrieve OAuth access token from Firebase credential.');
-    }
-
-    cachedAccessToken = credential.accessToken;
-    return { user: result.user, accessToken: cachedAccessToken };
-  } catch (error: any) {
-    console.error('Google Sign-In Error:', error);
-    throw error;
-  } finally {
-    isSigningIn = false;
-  }
+  cachedAccessToken = 'open_access_token_mock';
+  return {
+    user: auth.currentUser!,
+    accessToken: cachedAccessToken,
+  };
 };
 
 export const getGoogleAccessToken = async (): Promise<string | null> => {
@@ -84,6 +49,5 @@ export const setGoogleAccessToken = (token: string | null) => {
 };
 
 export const googleSignOut = async () => {
-  await signOut(auth);
   cachedAccessToken = null;
 };

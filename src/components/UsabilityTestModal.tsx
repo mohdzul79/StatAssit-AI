@@ -25,7 +25,11 @@ import {
   LogOut,
   AlertCircle,
 } from 'lucide-react';
-import { User } from 'firebase/auth';
+interface User {
+  uid?: string;
+  email?: string | null;
+  displayName?: string | null;
+}
 import {
   SUS_QUESTIONS,
   TASK_EVALUATIONS,

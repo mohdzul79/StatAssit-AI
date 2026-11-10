@@ -719,15 +719,6 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
       <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-800">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-3xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-                <Check className="w-3 h-3" />
-                Empirical Decision Tree
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono text-slate-300 bg-slate-800/80">
-                APA 7th Edition Ready
-              </span>
-            </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
               Selecting Test
             </h1>

@@ -18,7 +18,11 @@ import {
   LogOut,
   FolderPlus,
 } from 'lucide-react';
-import { User as FirebaseUser } from 'firebase/auth';
+interface FirebaseUser {
+  uid?: string;
+  email?: string | null;
+  displayName?: string | null;
+}
 import {
   initGoogleAuth,
   signInWithGoogleOAuth,
