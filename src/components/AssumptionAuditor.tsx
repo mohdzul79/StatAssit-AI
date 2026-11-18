@@ -175,17 +175,17 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       {/* Auditor Header */}
-      <div className="p-5 sm:p-6 border-b border-slate-100 bg-linear-to-r from-slate-50 via-white to-blue-50/20">
+      <div className="p-5 sm:p-6 border-b border-slate-100 bg-linear-to-r from-slate-50 via-white to-blue-50/30">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="p-1 bg-blue-100 text-blue-700 rounded-md">
+              <span className="p-1 bg-blue-50 text-blue-700 rounded-md">
                 <ShieldCheck className="w-4 h-4" />
               </span>
               <span className="text-xs font-mono text-blue-700 uppercase tracking-wider font-semibold">
                 Automated Assumption Auditor
               </span>
-              <span className="text-slate-300">·</span>
+              <span className="text-slate-600">·</span>
               <span className="text-xs font-mono text-slate-500">
                 APA 7th Verification Protocol
               </span>
@@ -203,10 +203,10 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
             <span
               className={`px-3 py-1 rounded-full text-xs font-bold font-mono flex items-center gap-1.5 ${
                 audit.overallHealth === 'Optimal'
-                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                   : audit.overallHealth === 'Caution'
-                  ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                  : 'bg-rose-100 text-rose-800 border border-rose-300'
+                  ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                  : 'bg-rose-100 text-rose-800 border border-rose-200'
               }`}
             >
               {audit.overallHealth === 'Optimal' ? (
@@ -259,7 +259,7 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
 
         {/* Quick Audit Metrics Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-3 border-t border-slate-100">
-          <div className="bg-white/80 p-2.5 rounded-lg border border-slate-200/80">
+          <div className="bg-white p-2.5 rounded-lg border border-slate-200">
             <span className="text-[10px] font-mono text-slate-500 uppercase block">Normality Index</span>
             <div className="flex items-center justify-between mt-0.5">
               <span className="text-xs font-bold text-slate-800">
@@ -280,7 +280,7 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
             </span>
           </div>
 
-          <div className="bg-white/80 p-2.5 rounded-lg border border-slate-200/80">
+          <div className="bg-white p-2.5 rounded-lg border border-slate-200">
             <span className="text-[10px] font-mono text-slate-500 uppercase block">Equal Variances</span>
             <div className="flex items-center justify-between mt-0.5">
               <span className="text-xs font-bold text-slate-800">
@@ -307,7 +307,7 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
             </span>
           </div>
 
-          <div className="bg-white/80 p-2.5 rounded-lg border border-slate-200/80">
+          <div className="bg-white p-2.5 rounded-lg border border-slate-200">
             <span className="text-[10px] font-mono text-slate-500 uppercase block">Outlier Screening</span>
             <div className="flex items-center justify-between mt-0.5">
               <span className="text-xs font-bold text-slate-800">
@@ -326,7 +326,7 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
             </span>
           </div>
 
-          <div className="bg-white/80 p-2.5 rounded-lg border border-slate-200/80">
+          <div className="bg-white p-2.5 rounded-lg border border-slate-200">
             <span className="text-[10px] font-mono text-slate-500 uppercase block">Inferential Guidance</span>
             <div className="flex items-center justify-between mt-0.5">
               <span className="text-xs font-bold text-slate-800 truncate">
@@ -341,8 +341,8 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
 
         {/* Expandable APA Methodological Guidelines */}
         {showGuide && (
-          <div className="mt-4 p-4 bg-blue-50/60 border border-blue-200 rounded-lg text-xs space-y-2 text-slate-700">
-            <div className="font-bold text-blue-900 flex items-center gap-1.5">
+          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-xs space-y-2 text-slate-700">
+            <div className="font-bold text-blue-800 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-blue-600" />
               <span>APA 7th Publication Manual: Assumption Auditing Standard</span>
             </div>
@@ -350,10 +350,10 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
               Modern academic statistical reporting mandates testing assumptions before interpreting test statistics. Significance testing for normality (such as Shapiro-Wilk) is overly sensitive at large sample sizes (N &gt; 100) and underpowered at small sizes. The APA recommends <strong>visual inspection of normal Q-Q plots</strong>, checking that skewness and kurtosis lie within [-1.0, +1.0], and ensuring residuals do not display heteroscedastic fan patterns.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
-              <div className="p-2 bg-white rounded border border-blue-100">
+              <div className="p-2 bg-white rounded border border-blue-200">
                 <strong>Q-Q Plot:</strong> Points should align along the 45° line within the 95% shaded confidence envelope.
               </div>
-              <div className="p-2 bg-white rounded border border-blue-100">
+              <div className="p-2 bg-white rounded border border-blue-200">
                 <strong>Homoscedasticity:</strong> Residuals vs. Fitted values must display an even vertical dispersion with zero funneling.
               </div>
             </div>
@@ -362,58 +362,58 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
       </div>
 
       {/* Auditor Plot View Switcher */}
-      <div className="flex border-b border-slate-200 bg-slate-50/70 px-6 pt-3 gap-2 overflow-x-auto">
+      <div className="flex border-b border-slate-200 bg-slate-50 px-6 pt-3 gap-2 overflow-x-auto">
         <button
           onClick={() => setActiveTab('qq')}
-          className={`pb-2.5 px-3 text-xs font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+          className={`pb-2.5 px-3 text-xs font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'qq'
-              ? 'border-blue-600 text-blue-700 bg-white/70 rounded-t-md'
-              : 'border-transparent text-slate-600 hover:text-slate-900'
+              ? 'border-blue-600 text-blue-700 bg-white rounded-t-md'
+              : 'border-transparent text-slate-500 hover:text-slate-900'
           }`}
         >
           <TrendingUp className="w-3.5 h-3.5" />
           <span>Normal Q-Q Probability Plot</span>
-          <span className="px-1.5 py-0.2 rounded text-[10px] bg-slate-200/80 text-slate-700">
+          <span className="px-1.5 py-0.2 rounded text-[10px] bg-slate-200 text-slate-700">
             Normality
           </span>
         </button>
 
         <button
           onClick={() => setActiveTab('homoscedasticity')}
-          className={`pb-2.5 px-3 text-xs font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+          className={`pb-2.5 px-3 text-xs font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'homoscedasticity'
-              ? 'border-blue-600 text-blue-700 bg-white/70 rounded-t-md'
-              : 'border-transparent text-slate-600 hover:text-slate-900'
+              ? 'border-blue-600 text-blue-700 bg-white rounded-t-md'
+              : 'border-transparent text-slate-500 hover:text-slate-900'
           }`}
         >
           <Activity className="w-3.5 h-3.5" />
           <span>Residuals vs. Fitted Plot</span>
-          <span className="px-1.5 py-0.2 rounded text-[10px] bg-slate-200/80 text-slate-700">
+          <span className="px-1.5 py-0.2 rounded text-[10px] bg-slate-200 text-slate-700">
             Homoscedasticity
           </span>
         </button>
 
         <button
           onClick={() => setActiveTab('histogram')}
-          className={`pb-2.5 px-3 text-xs font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+          className={`pb-2.5 px-3 text-xs font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'histogram'
-              ? 'border-blue-600 text-blue-700 bg-white/70 rounded-t-md'
-              : 'border-transparent text-slate-600 hover:text-slate-900'
+              ? 'border-blue-600 text-blue-700 bg-white rounded-t-md'
+              : 'border-transparent text-slate-500 hover:text-slate-900'
           }`}
         >
           <BarChart2 className="w-3.5 h-3.5" />
           <span>Residual Histogram & Gaussian Curve</span>
-          <span className="px-1.5 py-0.2 rounded text-[10px] bg-slate-200/80 text-slate-700">
+          <span className="px-1.5 py-0.2 rounded text-[10px] bg-slate-200 text-slate-700">
             Density
           </span>
         </button>
 
         <button
           onClick={() => setActiveTab('outliers')}
-          className={`pb-2.5 px-3 text-xs font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+          className={`pb-2.5 px-3 text-xs font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'outliers'
-              ? 'border-blue-600 text-blue-700 bg-white/70 rounded-t-md'
-              : 'border-transparent text-slate-600 hover:text-slate-900'
+              ? 'border-blue-600 text-blue-700 bg-white rounded-t-md'
+              : 'border-transparent text-slate-500 hover:text-slate-900'
           }`}
         >
           <Layers className="w-3.5 h-3.5" />
@@ -431,7 +431,7 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
         {/* TAB 1: Normal Q-Q Plot */}
         {activeTab === 'qq' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div className="lg:col-span-8 bg-slate-50/50 rounded-xl p-4 border border-slate-200 relative">
+            <div className="lg:col-span-8 bg-slate-50 rounded-xl p-4 border border-slate-200 relative">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <span className="text-xs font-bold text-slate-900">
@@ -447,7 +447,7 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
                     y = x Reference
                   </span>
                   <span className="flex items-center gap-1 text-slate-600">
-                    <span className="w-2.5 h-2 bg-blue-100 border border-blue-300 inline-block"></span>
+                    <span className="w-2.5 h-2 bg-blue-50 border border-blue-200 inline-block"></span>
                     95% Envelope
                   </span>
                 </div>
@@ -628,14 +628,14 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
 
               {/* Hover Tooltip Overlay */}
               {hoveredQQ && (
-                <div className="absolute top-4 right-4 bg-slate-900/90 text-white text-xs p-2.5 rounded-lg shadow-lg font-mono pointer-events-none backdrop-blur-xs border border-slate-700">
-                  <div className="font-bold text-blue-300 mb-1">
+                <div className="absolute top-4 right-4 bg-white text-slate-900 text-xs p-2.5 rounded-lg shadow-lg font-mono pointer-events-none backdrop-blur-xs border border-slate-300">
+                  <div className="font-bold text-blue-700 mb-1">
                     Observation #{hoveredQQ.obsIndex}
                   </div>
                   <div>Theoretical Quantile: {hoveredQQ.theoreticalQuantile.toFixed(2)}</div>
                   <div>Std Residual: {hoveredQQ.sampleStdResidual.toFixed(2)}</div>
                   <div>Raw Residual: {hoveredQQ.rawResidual.toFixed(2)}</div>
-                  <div className="text-[10px] text-slate-300 mt-1">
+                  <div className="text-[10px] text-slate-600 mt-1">
                     {hoveredQQ.isOutlier ? '⚠️ Outlier (|z| ≥ 2.50)' : '✓ Within expected range'}
                   </div>
                 </div>
@@ -675,7 +675,7 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 text-xs space-y-2">
+              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 text-xs space-y-2">
                 <span className="font-semibold text-slate-800 block">
                   How to inspect a Q-Q Plot:
                 </span>
@@ -693,7 +693,7 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
         {/* TAB 2: Homoscedasticity Plot (Residuals vs Fitted) */}
         {activeTab === 'homoscedasticity' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div className="lg:col-span-8 bg-slate-50/50 rounded-xl p-4 border border-slate-200 relative">
+            <div className="lg:col-span-8 bg-slate-50 rounded-xl p-4 border border-slate-200 relative">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <span className="text-xs font-bold text-slate-900">
@@ -890,14 +890,14 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
 
               {/* Hover Tooltip Overlay */}
               {hoveredHSc && (
-                <div className="absolute top-4 right-4 bg-slate-900/90 text-white text-xs p-2.5 rounded-lg shadow-lg font-mono pointer-events-none backdrop-blur-xs border border-slate-700">
-                  <div className="font-bold text-blue-300 mb-1">
+                <div className="absolute top-4 right-4 bg-white text-slate-900 text-xs p-2.5 rounded-lg shadow-lg font-mono pointer-events-none backdrop-blur-xs border border-slate-300">
+                  <div className="font-bold text-blue-700 mb-1">
                     Observation #{hoveredHSc.obsIndex} {hoveredHSc.group ? `(${hoveredHSc.group})` : ''}
                   </div>
                   <div>Fitted Ŷ: {hoveredHSc.fitted.toFixed(2)}</div>
                   <div>Raw Residual: {hoveredHSc.residual.toFixed(2)}</div>
                   <div>Std Residual: {hoveredHSc.stdResidual.toFixed(2)}</div>
-                  <div className="text-[10px] text-slate-300 mt-1">
+                  <div className="text-[10px] text-slate-600 mt-1">
                     {hoveredHSc.isOutlier ? '⚠️ Outlier' : '✓ Normal spread'}
                   </div>
                 </div>
@@ -921,7 +921,7 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
                       Sub-Group Residual Variances:
                     </span>
                     {audit.groupVariances.map((grp) => (
-                      <div key={grp.groupName} className="p-2 bg-slate-50 rounded border border-slate-200/80 text-xs">
+                      <div key={grp.groupName} className="p-2 bg-slate-50 rounded border border-slate-200 text-xs">
                         <div className="flex justify-between font-medium text-slate-800">
                           <span>{grp.groupName} (n = {grp.n})</span>
                           <span className="font-mono text-slate-900">s² = {grp.variance.toFixed(2)}</span>
@@ -936,7 +936,7 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
                 )}
               </div>
 
-              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 text-xs space-y-2">
+              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 text-xs space-y-2">
                 <span className="font-semibold text-slate-800 block">
                   Interpreting Homoscedasticity:
                 </span>
@@ -953,7 +953,7 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
         {/* TAB 3: Residual Histogram & Bell Curve */}
         {activeTab === 'histogram' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div className="lg:col-span-8 bg-slate-50/50 rounded-xl p-4 border border-slate-200 relative">
+            <div className="lg:col-span-8 bg-slate-50 rounded-xl p-4 border border-slate-200 relative">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <span className="text-xs font-bold text-slate-900">
@@ -1179,9 +1179,9 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
             </div>
 
             {audit.observations.filter((o) => Math.abs(o.stdResidual) >= 2.0).length === 0 ? (
-              <div className="p-8 text-center bg-emerald-50/50 rounded-xl border border-emerald-200">
+              <div className="p-8 text-center bg-emerald-50 rounded-xl border border-emerald-200">
                 <Check className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
-                <h5 className="text-sm font-bold text-emerald-900">Zero Extreme Outliers Detected</h5>
+                <h5 className="text-sm font-bold text-emerald-800">Zero Extreme Outliers Detected</h5>
                 <p className="text-xs text-emerald-700 max-w-md mx-auto mt-1">
                   All {audit.sampleSize} observations have standardized residuals strictly bounded within [-2.0, +2.0]. Your dataset is clear of influential single-case distortions.
                 </p>
@@ -1204,7 +1204,7 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
                     {audit.observations
                       .filter((o) => Math.abs(o.stdResidual) >= 2.0)
                       .map((obs) => (
-                        <tr key={obs.obsIndex} className={obs.isOutlier ? 'bg-rose-50/50' : 'bg-amber-50/30'}>
+                        <tr key={obs.obsIndex} className={obs.isOutlier ? 'bg-rose-50' : 'bg-amber-50'}>
                           <td className="py-2 px-3 font-bold text-slate-900">#{obs.obsIndex}</td>
                           {obs.group && <td className="py-2 px-3 text-slate-700 font-sans">{obs.group}</td>}
                           <td className="py-2 px-3 text-slate-800">{obs.actualY.toFixed(2)}</td>
@@ -1264,7 +1264,7 @@ export const AssumptionAuditor: React.FC<AssumptionAuditorProps> = ({
             </button>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900 text-slate-200 text-xs sm:text-sm font-serif leading-relaxed border border-slate-800">
+          <div className="p-4 rounded-xl bg-slate-50 text-slate-800 text-xs sm:text-sm font-serif leading-relaxed border border-slate-200">
             <p>{audit.apaNarrative}</p>
           </div>
         </div>

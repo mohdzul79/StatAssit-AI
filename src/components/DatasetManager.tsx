@@ -632,7 +632,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                 <span className="text-xs font-bold uppercase tracking-wider text-blue-700 font-mono">
                   Step 2 · Pre-Set Study Loaded
                 </span>
-                <span className="text-2xs font-bold bg-blue-100 text-blue-900 px-2 py-0.5 rounded-md border border-blue-200">
+                <span className="text-2xs font-bold bg-blue-50 text-blue-800 px-2 py-0.5 rounded-md border border-blue-200">
                   {presetStudyBanner.testTitle}
                 </span>
               </div>
@@ -662,7 +662,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
             className={`px-4 py-2.5 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 shrink-0 shadow-xs cursor-pointer self-end md:self-auto ${
               datasetValidation.isComplete
                 ? 'text-white bg-blue-600 hover:bg-blue-700'
-                : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-300'
+                : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
             }`}
             title={datasetValidation.isComplete ? 'Proceed to Step 3: Test Analysis' : `Sign of Error: ${datasetValidation.reason} (Fill required data)`}
           >
@@ -671,7 +671,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
             {datasetValidation.isComplete ? (
               <ChevronRight className="w-4 h-4" />
             ) : (
-              <span className="text-[10px] bg-rose-200/80 text-rose-900 px-1.5 py-0.5 rounded font-mono font-bold">
+              <span className="text-[10px] bg-rose-200/80 text-rose-800 px-1.5 py-0.5 rounded font-mono font-bold">
                 Error: Incomplete
               </span>
             )}
@@ -699,7 +699,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
               </h1>
               <button
                 onClick={handleOpenEditInfo}
-                className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
                 title="Edit study title, domain, or description"
               >
                 <Edit2 className="w-4 h-4" />
@@ -783,7 +783,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                 className={`flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-lg border font-medium ${
                   datasetValidation.isComplete
                     ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                    : 'bg-rose-50 text-rose-900 border-rose-300 ring-1 ring-rose-200'
+                    : 'bg-rose-50 text-rose-800 border-rose-200 ring-1 ring-rose-200'
                 }`}
               >
                 {datasetValidation.isComplete ? (
@@ -860,7 +860,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                     Sign of Error · Step 3 Blocked
                   </span>
                   {datasetValidation.testTitle && (
-                    <span className="text-2xs font-bold text-rose-900 bg-white/80 px-2 py-0.5 rounded border border-rose-200">
+                    <span className="text-2xs font-bold text-rose-800 bg-white px-2 py-0.5 rounded border border-rose-200">
                       Test Design: {datasetValidation.testTitle}
                     </span>
                   )}
@@ -898,7 +898,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
               <button
                 type="button"
                 onClick={() => setPasteModalOpen(true)}
-                className="px-3 py-1.5 text-xs font-semibold text-rose-800 bg-white hover:bg-rose-100/70 border border-rose-300 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                className="px-3 py-1.5 text-xs font-semibold text-rose-800 bg-white hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
               >
                 <ClipboardPaste className="w-3.5 h-3.5 text-rose-600" />
                 <span>Paste Data</span>
@@ -910,7 +910,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                     onResetSampleDataset(currentDataset.id);
                     showFeedback(`Reloaded full verified dataset for ${currentDataset.name}.`);
                   }}
-                  className="px-3 py-1.5 text-xs font-semibold text-rose-800 bg-white hover:bg-rose-100/70 border border-rose-300 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                  className="px-3 py-1.5 text-xs font-semibold text-rose-800 bg-white hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
                   title="Reload complete default observations"
                 >
                   <RotateCcw className="w-3.5 h-3.5 text-rose-600" />
@@ -922,8 +922,8 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
         )}
 
         {errorMsg && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+          <div className="mt-4 p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
             <span>{errorMsg}</span>
           </div>
         )}
@@ -938,7 +938,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
         {/* Live N and Variables Quick Management Dashboard Cards */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Card 1: Sample Size N Manager */}
-          <div className="p-4 rounded-xl border border-blue-200/80 bg-blue-50/40 flex items-start justify-between">
+          <div className="p-4 rounded-xl border border-blue-200 bg-blue-50 flex items-start justify-between">
             <div>
               <span className="text-[11px] font-mono uppercase tracking-wider text-blue-700 font-semibold flex items-center gap-1.5">
                 <Hash className="w-3.5 h-3.5" />
@@ -953,7 +953,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
             </div>
             <button
               onClick={handleOpenResizeNModal}
-              className="px-2.5 py-1.5 text-xs font-semibold text-blue-700 bg-white hover:bg-blue-50 border border-blue-300 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-2.5 py-1.5 text-xs font-semibold text-blue-700 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
               title="Change sample size N (truncate or generate new observations)"
             >
               <Sliders className="w-3.5 h-3.5 text-blue-600" />
@@ -962,7 +962,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
           </div>
 
           {/* Card 2: Variables Manager */}
-          <div className="p-4 rounded-xl border border-indigo-200/80 bg-indigo-50/40 flex items-start justify-between">
+          <div className="p-4 rounded-xl border border-indigo-200 bg-indigo-50 flex items-start justify-between">
             <div>
               <span className="text-[11px] font-mono uppercase tracking-wider text-indigo-700 font-semibold flex items-center gap-1.5">
                 <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -977,7 +977,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
             </div>
             <button
               onClick={() => setIsAddColumnModalOpen(true)}
-              className="px-2.5 py-1.5 text-xs font-semibold text-indigo-700 bg-white hover:bg-indigo-50 border border-indigo-300 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-2.5 py-1.5 text-xs font-semibold text-indigo-700 bg-white hover:bg-indigo-50 border border-indigo-200 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
               title="Add a new variable to this dataset"
             >
               <Plus className="w-3.5 h-3.5 text-indigo-600" />
@@ -988,8 +988,8 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
           {/* Card 3: Research Questions (RQ) Manager */}
           <div className={`p-4 rounded-xl border flex items-start justify-between ${
             datasetValidation.missingResearchQuestion
-              ? 'border-rose-300 bg-rose-50/60 ring-1 ring-rose-300'
-              : 'border-purple-200/80 bg-purple-50/40'
+              ? 'border-rose-200 bg-rose-50 ring-1 ring-rose-300'
+              : 'border-purple-200 bg-purple-50'
           }`}>
             <div>
               <span className={`text-[11px] font-mono uppercase tracking-wider font-semibold flex items-center gap-1.5 ${
@@ -1018,7 +1018,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                 className={`px-2.5 py-1.5 text-xs font-semibold rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer ${
                   datasetValidation.missingResearchQuestion
                     ? 'text-white bg-purple-600 hover:bg-purple-700 animate-pulse'
-                    : 'text-purple-700 bg-white hover:bg-purple-50 border border-purple-300'
+                    : 'text-purple-700 bg-white hover:bg-purple-50 border border-purple-200'
                 }`}
                 title="Add a new research question to this study"
               >
@@ -1067,8 +1067,8 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                   key={rq.id}
                   className={`p-4 rounded-xl border transition-all text-xs flex flex-col justify-between ${
                     isSelected
-                      ? 'border-purple-600 bg-purple-50/40 ring-1 ring-purple-600'
-                      : 'border-slate-200 hover:border-slate-300 bg-slate-50/50 hover:bg-white'
+                      ? 'border-purple-600 bg-purple-50 ring-1 ring-purple-600'
+                      : 'border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-white'
                   }`}
                 >
                   <div className="space-y-2">
@@ -1078,7 +1078,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                       </span>
                     </div>
 
-                    <p className="text-xs font-serif italic text-slate-800 line-clamp-3 bg-white p-2.5 rounded border border-slate-200/70">
+                    <p className="text-xs font-serif italic text-slate-800 line-clamp-3 bg-white p-2.5 rounded border border-slate-200">
                       "{rq.question}"
                     </p>
 
@@ -1091,7 +1091,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                           </div>
                         )}
                         {rq.hypothesisAlt && (
-                          <div className="truncate text-blue-900" title={rq.hypothesisAlt}>
+                          <div className="truncate text-blue-800" title={rq.hypothesisAlt}>
                             <span className="font-bold text-blue-700 font-sans">H₁: </span>
                             {rq.hypothesisAlt.replace(/^H[1₁]:\s*/, '')}
                           </div>
@@ -1105,7 +1105,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                       {onOpenEditRqModal && (
                         <button
                           onClick={() => onOpenEditRqModal(rq)}
-                          className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"
+                          className="p-1 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded"
                           title="Edit this research question"
                         >
                           <Edit2 className="w-3 h-3" />
@@ -1114,7 +1114,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                       {onDeleteResearchQuestion && (
                         <button
                           onClick={() => onDeleteResearchQuestion(rq.id)}
-                          className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"
+                          className="p-1 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded"
                           title="Delete research question"
                         >
                           <Trash2 className="w-3 h-3" />
@@ -1144,8 +1144,8 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
             })}
           </div>
         ) : (
-          <div className="p-8 border-2 border-dashed border-rose-300 bg-rose-50/50 rounded-xl text-center space-y-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-rose-100 text-rose-800 border border-rose-300 text-xs font-bold">
+          <div className="p-8 border-2 border-dashed border-rose-200 bg-rose-50 rounded-xl text-center space-y-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-rose-100 text-rose-800 border border-rose-200 text-xs font-bold">
               <AlertCircle className="w-4 h-4 text-rose-600 animate-pulse" />
               <span>Sign of Error: Step 3 Blocked · Research Questions Required</span>
             </div>
@@ -1182,7 +1182,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsAddColumnModalOpen(true)}
-              className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors flex items-center gap-1.5"
+              className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-50 border border-blue-200 rounded-lg transition-colors flex items-center gap-1.5"
             >
               <FilePlus2 className="w-3.5 h-3.5 text-blue-600" />
               <span>Add Variable</span>
@@ -1196,7 +1196,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-700 font-semibold">
+              <tr className="border-b border-slate-200 bg-slate-50 text-slate-700 font-semibold">
                 <th className="py-2.5 px-3">Variable Name (Click Pencil to Rename)</th>
                 <th className="py-2.5 px-3">Measurement Scale (Role)</th>
                 <th className="py-2.5 px-3">Distinct Values</th>
@@ -1209,7 +1209,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
               {currentDataset.columns.map((col, colIndex) => {
                 const isRenaming = renamingCol === col.name;
                 return (
-                  <tr key={col.name} className="hover:bg-slate-50/50">
+                  <tr key={col.name} className="hover:bg-slate-50">
                     <td className="py-2.5 px-3 font-medium text-slate-900 font-mono">
                       {isRenaming ? (
                         <div className="flex items-center gap-1">
@@ -1233,7 +1233,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                           </button>
                           <button
                             onClick={() => setRenamingCol(null)}
-                            className="p-1 text-slate-400 hover:bg-slate-100 rounded"
+                            className="p-1 text-slate-500 hover:bg-slate-100 rounded"
                             title="Cancel"
                           >
                             <X className="w-3.5 h-3.5" />
@@ -1244,7 +1244,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                           <span>{col.name}</span>
                           <button
                             onClick={() => handleStartRenameColumn(col.name)}
-                            className="p-0.5 text-slate-400 hover:text-slate-700 rounded hover:bg-slate-100"
+                            className="p-0.5 text-slate-500 hover:text-slate-700 rounded hover:bg-slate-100"
                             title="Rename variable"
                           >
                             <Edit2 className="w-3 h-3" />
@@ -1284,7 +1284,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                         <button
                           onClick={() => handleMoveColumn(col.name, 'left')}
                           disabled={colIndex === 0}
-                          className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="p-1 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
                           title="Move variable left"
                         >
                           <ArrowLeft className="w-3.5 h-3.5" />
@@ -1292,7 +1292,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                         <button
                           onClick={() => handleMoveColumn(col.name, 'right')}
                           disabled={colIndex === currentDataset.columns.length - 1}
-                          className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="p-1 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
                           title="Move variable right"
                         >
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -1323,7 +1323,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                         {/* Delete Variable */}
                         <button
                           onClick={() => handleDeleteColumn(col.name)}
-                          className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                          className="p-1 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
                           title={`Delete variable "${col.name}"`}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -1369,7 +1369,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
 
             <button
               onClick={handleOpenResizeNModal}
-              className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors flex items-center gap-1.5"
+              className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-50 border border-blue-200 rounded-lg transition-colors flex items-center gap-1.5"
               title="Adjust total sample size N directly"
             >
               <Sliders className="w-3.5 h-3.5 text-blue-600" />
@@ -1396,7 +1396,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                 }}
                 className="pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 w-40"
               />
-              <Filter className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2" />
+              <Filter className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2" />
             </div>
 
             <div className="flex items-center gap-1">
@@ -1422,7 +1422,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-slate-700 font-semibold font-mono">
-                <th className="py-2.5 px-3 text-slate-400 w-12 text-center">#</th>
+                <th className="py-2.5 px-3 text-slate-500 w-12 text-center">#</th>
                 {currentDataset.columns.map((c) => {
                   const isRenaming = renamingCol === c.name;
                   return (
@@ -1448,7 +1448,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                           </button>
                           <button
                             onClick={() => setRenamingCol(null)}
-                            className="p-0.5 text-slate-400 hover:bg-slate-100 rounded"
+                            className="p-0.5 text-slate-500 hover:bg-slate-100 rounded"
                           >
                             <X className="w-3.5 h-3.5" />
                           </button>
@@ -1459,7 +1459,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                             <span>{c.name}</span>
                             <button
                               onClick={() => handleStartRenameColumn(c.name)}
-                              className="p-0.5 text-slate-400 hover:text-slate-700 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="p-0.5 text-slate-500 hover:text-slate-700 rounded opacity-0 group-hover:opacity-100 transition-opacity"
                               title="Rename variable"
                             >
                               <Edit2 className="w-2.5 h-2.5" />
@@ -1493,7 +1493,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                     </th>
                   );
                 })}
-                <th className="py-2.5 px-3 text-right w-12 text-slate-400">Row</th>
+                <th className="py-2.5 px-3 text-right w-12 text-slate-500">Row</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-mono tabular-nums text-slate-800">
@@ -1501,14 +1501,14 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                 <tr>
                   <td
                     colSpan={currentDataset.columns.length + 2}
-                    className="py-14 px-4 text-center bg-slate-50/40"
+                    className="py-14 px-4 text-center bg-slate-50"
                   >
                     <div className="flex flex-col items-center justify-center gap-2.5 max-w-md mx-auto text-slate-500">
-                      <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500">
                         <Database className="w-6 h-6" />
                       </div>
                       <div className="space-y-1.5">
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-100 text-rose-800 border border-rose-300 text-xs font-bold">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-100 text-rose-800 border border-rose-200 text-xs font-bold">
                           <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
                           <span>Sign of Error: Data Required Before Step 3</span>
                         </div>
@@ -1523,7 +1523,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                         <button
                           type="button"
                           onClick={handleAddRow}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-50 border border-blue-200 rounded-lg transition-colors cursor-pointer"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           <span>Add New Row</span>
@@ -1542,8 +1542,8 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                 </tr>
               ) : (
                 paginatedRows.map(({ row, originalIndex }) => (
-                  <tr key={originalIndex} className="hover:bg-blue-50/20 group">
-                    <td className="py-2 px-3 text-center text-slate-400 text-[11px]">
+                  <tr key={originalIndex} className="hover:bg-blue-50 group">
+                    <td className="py-2 px-3 text-center text-slate-500 text-[11px]">
                       {originalIndex + 1}
                     </td>
 
@@ -1571,8 +1571,8 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                             isEditing
                               ? 'bg-blue-50 border-blue-500 ring-1 ring-blue-500'
                               : isCellEmpty
-                              ? 'bg-rose-50 border-rose-300 ring-1 ring-rose-400 hover:bg-rose-100/80'
-                              : 'border-transparent hover:bg-blue-50/50 hover:border-blue-200'
+                              ? 'bg-rose-50 border-rose-200 ring-1 ring-rose-400 hover:bg-rose-100'
+                              : 'border-transparent hover:bg-blue-50 hover:border-blue-200'
                           }`}
                         >
                           {isEditing ? (
@@ -1592,7 +1592,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                             <div className="flex items-center justify-between gap-2">
                               <span>
                                 {isCellEmpty ? (
-                                  <span className="inline-flex items-center gap-1 text-rose-700 font-bold text-[11px] bg-rose-100/90 px-1.5 py-0.5 rounded border border-rose-300">
+                                  <span className="inline-flex items-center gap-1 text-rose-700 font-bold text-[11px] bg-rose-100 px-1.5 py-0.5 rounded border border-rose-200">
                                     <AlertCircle className="w-3 h-3 text-rose-600 shrink-0 animate-pulse" />
                                     Empty · Fill data
                                   </span>
@@ -1600,7 +1600,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                                   String(rawVal)
                                 )}
                               </span>
-                              <Edit2 className={`w-2.5 h-2.5 ${isCellEmpty ? 'text-rose-500' : 'text-slate-300 opacity-0 group-hover:opacity-60'} transition-opacity`} />
+                              <Edit2 className={`w-2.5 h-2.5 ${isCellEmpty ? 'text-rose-500' : 'text-slate-600 opacity-0 group-hover:opacity-60'} transition-opacity`} />
                             </div>
                           )}
                         </td>
@@ -1610,7 +1610,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                     <td className="py-2 px-3 text-right">
                       <button
                         onClick={() => handleDeleteRow(originalIndex)}
-                        className="p-1 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                        className="p-1 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
                         title="Delete this observation row"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -1689,8 +1689,8 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
 
               {/* Strategy selector when expanding N */}
               {targetNInput > currentDataset.totalRows && (
-                <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-lg space-y-2">
-                  <span className="text-xs font-bold text-blue-900 block">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg space-y-2">
+                  <span className="text-xs font-bold text-blue-800 block">
                     Generation Strategy for Additional {targetNInput - currentDataset.totalRows} Observations:
                   </span>
 
@@ -1796,7 +1796,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
                   <div className="w-1/2 font-mono bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded truncate text-slate-700">
                     {originalLevel}
                   </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                   <input
                     type="text"
                     value={recodeMapping[originalLevel]}

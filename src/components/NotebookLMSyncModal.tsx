@@ -279,7 +279,7 @@ export const NotebookLMSyncModal: React.FC<NotebookLMSyncModalProps> = ({
           {activeTab === 'sync' && (
             <>
               {/* Google Workspace Connection Card */}
-              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-3">
+              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-blue-600" />
@@ -372,7 +372,7 @@ export const NotebookLMSyncModal: React.FC<NotebookLMSyncModalProps> = ({
               {/* Target Location Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {/* Google Drive Folder */}
-                <div className="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-blue-300 transition-colors shadow-2xs">
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-blue-200 transition-colors shadow-2xs">
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
                       <Folder className="w-4 h-4 text-amber-500" />
@@ -389,7 +389,7 @@ export const NotebookLMSyncModal: React.FC<NotebookLMSyncModalProps> = ({
                       </a>
                     )}
                   </div>
-                  <div className="text-xs font-mono font-semibold text-slate-900 bg-slate-100 px-2 py-1 rounded border border-slate-200/80 truncate">
+                  <div className="text-xs font-mono font-semibold text-slate-900 bg-slate-100 px-2 py-1 rounded border border-slate-200 truncate">
                     unimas
                   </div>
                   <p className="text-2xs text-slate-500 mt-1">
@@ -400,7 +400,7 @@ export const NotebookLMSyncModal: React.FC<NotebookLMSyncModalProps> = ({
                 </div>
 
                 {/* Google Doc Logbook */}
-                <div className="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-blue-300 transition-colors shadow-2xs">
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-blue-200 transition-colors shadow-2xs">
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
                       <FileText className="w-4 h-4 text-blue-600" />
@@ -417,7 +417,7 @@ export const NotebookLMSyncModal: React.FC<NotebookLMSyncModalProps> = ({
                       </a>
                     )}
                   </div>
-                  <div className="text-xs font-mono font-semibold text-slate-900 bg-slate-100 px-2 py-1 rounded border border-slate-200/80 truncate">
+                  <div className="text-xs font-mono font-semibold text-slate-900 bg-slate-100 px-2 py-1 rounded border border-slate-200 truncate">
                     development statsAI
                   </div>
                   <p className="text-2xs text-slate-500 mt-1">
@@ -429,18 +429,18 @@ export const NotebookLMSyncModal: React.FC<NotebookLMSyncModalProps> = ({
               </div>
 
               {/* What will be synced section */}
-              <div className="p-4 rounded-xl border border-blue-100 bg-blue-50/50 space-y-2.5">
+              <div className="p-4 rounded-xl border border-blue-200 bg-blue-50 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-blue-900 flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-blue-800 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                     Payload to Append into 'development statsAI'
                   </span>
-                  <span className="text-2xs font-mono text-blue-700 bg-blue-100 px-2 py-0.5 rounded">
+                  <span className="text-2xs font-mono text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
                     Current Session
                   </span>
                 </div>
 
-                <div className="text-xs text-slate-700 space-y-1.5 bg-white p-3 rounded-lg border border-blue-100">
+                <div className="text-xs text-slate-700 space-y-1.5 bg-white p-3 rounded-lg border border-blue-200">
                   <div className="flex justify-between">
                     <span className="text-slate-500">Active Dataset:</span>
                     <span className="font-semibold text-slate-800">
@@ -546,7 +546,7 @@ export const NotebookLMSyncModal: React.FC<NotebookLMSyncModalProps> = ({
           {activeTab === 'notebooklm-guide' && (
             <div className="space-y-4">
               <div className="p-4 bg-gradient-to-br from-indigo-900 to-blue-950 text-white rounded-xl space-y-2">
-                <div className="flex items-center gap-2 text-indigo-300 font-bold text-xs uppercase tracking-wider">
+                <div className="flex items-center gap-2 text-indigo-200 font-bold text-xs uppercase tracking-wider">
                   <Sparkles className="w-4 h-4 text-indigo-300" />
                   Gemini NotebookLM Grounding Architecture
                 </div>
@@ -567,7 +567,7 @@ export const NotebookLMSyncModal: React.FC<NotebookLMSyncModalProps> = ({
 
                 <div className="space-y-2.5">
                   <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-blue-50 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">
                       1
                     </div>
                     <div>
@@ -581,7 +581,7 @@ export const NotebookLMSyncModal: React.FC<NotebookLMSyncModalProps> = ({
                   </div>
 
                   <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-blue-50 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">
                       2
                     </div>
                     <div>
@@ -595,7 +595,7 @@ export const NotebookLMSyncModal: React.FC<NotebookLMSyncModalProps> = ({
                   </div>
 
                   <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-blue-50 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">
                       3
                     </div>
                     <div>
@@ -609,7 +609,7 @@ export const NotebookLMSyncModal: React.FC<NotebookLMSyncModalProps> = ({
                   </div>
 
                   <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-blue-50 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">
                       4
                     </div>
                     <div>

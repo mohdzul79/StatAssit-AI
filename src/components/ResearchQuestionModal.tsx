@@ -216,7 +216,7 @@ export const ResearchQuestionModal: React.FC<ResearchQuestionModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+            className="p-1.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -492,7 +492,7 @@ export const ResearchQuestionModal: React.FC<ResearchQuestionModalProps> = ({
                 className={`px-5 py-2 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 shadow-sm ${
                   canSubmit
                     ? 'text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.98] cursor-pointer shadow-blue-500/20'
-                    : 'text-slate-400 bg-slate-100 border border-slate-200 cursor-not-allowed shadow-none'
+                    : 'text-slate-500 bg-slate-100 border border-slate-200 cursor-not-allowed shadow-none'
                 }`}
                 title={
                   !isTitleValid
@@ -504,7 +504,7 @@ export const ResearchQuestionModal: React.FC<ResearchQuestionModalProps> = ({
                     : 'Add this research question'
                 }
               >
-                <Check className={`w-3.5 h-3.5 ${canSubmit ? 'text-white' : 'text-slate-400'}`} />
+                <Check className={`w-3.5 h-3.5 ${canSubmit ? 'text-slate-900' : 'text-slate-500'}`} />
                 <span>
                   {isSubmitting
                     ? 'Saving...'

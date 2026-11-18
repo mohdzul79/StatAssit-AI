@@ -23,7 +23,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isOpen, onClose }) => 
       onClick={onClose}
     >
       <div
-        className="relative bg-[#faf8f5] rounded-3xl shadow-2xl border border-amber-200/50 max-w-md w-full overflow-hidden text-slate-800 transition-all"
+        className="relative bg-[#faf8f5] rounded-3xl shadow-2xl border border-amber-200 max-w-md w-full overflow-hidden text-slate-800 transition-all"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Soft warm golden ambient glow radiating from top */}
@@ -125,20 +125,20 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isOpen, onClose }) => 
                   <input type="hidden" name="no_recurring" value="0" />
 
                   {/* PayPal Verified ID Badge */}
-                  <div className="flex items-center justify-between px-3.5 py-2.5 bg-blue-50/80 border border-blue-200/80 rounded-xl text-xs">
+                  <div className="flex items-center justify-between px-3.5 py-2.5 bg-blue-50 border border-blue-200 rounded-xl text-xs">
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="w-5 h-5 rounded-md bg-[#003087] text-white font-extrabold text-[10px] flex items-center justify-center shrink-0 shadow-2xs">
                         P
                       </span>
                       <span className="font-semibold text-slate-700 shrink-0">PayPal ID:</span>
-                      <span className="font-mono font-bold text-blue-900 truncate">
+                      <span className="font-mono font-bold text-blue-800 truncate">
                         mohdzul@gmail.com
                       </span>
-                      <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] bg-blue-50 text-blue-800 font-bold px-1.5 py-0.5 rounded">
                         USD
                       </span>
                     </div>
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100/70 border border-emerald-200 px-2 py-0.5 rounded-full shrink-0 flex items-center gap-1">
+                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full shrink-0 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                       Verified
                     </span>
@@ -160,25 +160,25 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isOpen, onClose }) => 
                   >
                     <div className="flex items-center gap-2.5">
                       {/* PayPal Monogram Logo */}
-                      <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center p-1 backdrop-blur-xs border border-white/20 group-hover:bg-white/25 transition-colors">
-                        <svg className="w-5 h-5 text-amber-300 fill-current" viewBox="0 0 24 24">
+                      <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center p-1 backdrop-blur-xs border border-white/20 group-hover:bg-white transition-colors">
+                        <svg className="w-5 h-5 text-amber-700 fill-current" viewBox="0 0 24 24">
                           <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.789.789 0 0 1 .778-.667h7.243c2.47 0 4.316.59 5.344 1.71 1.011 1.103 1.353 2.72 1.018 4.808-.052.32-.12.65-.205.99-.861 3.447-3.175 5.568-6.877 5.568H9.362a.789.789 0 0 0-.778.667l-.837 4.298-.671.243z" fill="#0079C1" />
                           <path d="M19.143 8.563c-.052.32-.12.65-.205.99-.861 3.447-3.175 5.568-6.877 5.568H9.362a.789.789 0 0 0-.778.667l-1.393 7.151a.53.53 0 0 1-.523.428H3.32a.53.53 0 0 1-.523-.612L5.13 8.563h14.013z" fill="#00457C" opacity="0.3" />
                           <path d="M8.584 15.121l1.458-7.481a.789.789 0 0 1 .778-.667h5.378c1.867 0 3.322.446 4.12 1.28.74.776 1.004 1.942.756 3.486-.689 2.758-2.54 4.455-5.5 4.455h-2.19a.789.789 0 0 0-.778.667l-.844 4.33a.53.53 0 0 1-.523.428H8.061a.53.53 0 0 1-.523-.612l1.046-5.886z" fill="#0079C1" />
                         </svg>
                       </div>
                       <div className="text-left flex flex-col">
-                        <span className="leading-tight font-bold text-white text-sm sm:text-base">
+                        <span className="leading-tight font-bold text-slate-900 text-sm sm:text-base">
                           PayPal Secure Payment
                         </span>
-                        <span className="text-[11px] text-blue-200 font-normal">
+                        <span className="text-[11px] text-blue-800 font-normal">
                           Official 256-bit SSL Gateway • USD
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/10 text-white text-xs font-semibold shrink-0 group-hover:bg-white/20 transition-colors">
-                      <Lock className="w-3.5 h-3.5 text-amber-300" />
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white text-slate-900 text-xs font-semibold shrink-0 group-hover:bg-white transition-colors">
+                      <Lock className="w-3.5 h-3.5 text-amber-700" />
                       <span>Pay Securely</span>
                     </div>
                   </button>

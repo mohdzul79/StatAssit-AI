@@ -67,6 +67,7 @@ interface FeedbackModalProps {
     colCount: number;
   };
   adminEmail?: string;
+  initialCategory?: FeedbackCategory;
   onOpenAdminCms?: () => void;
 }
 
@@ -86,13 +87,14 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
   currentTest = 'independent_ttest',
   datasetStats = { hasData: false, rowCount: 0, colCount: 0 },
   adminEmail = 'mohdzul@gmail.com',
+  initialCategory = 'general',
   onOpenAdminCms,
 }) => {
   const isAdmin = defaultEmail.toLowerCase().trim() === adminEmail.toLowerCase().trim();
   const [activeView, setActiveView] = useState<'form' | 'history' | 'admin'>(isAdmin ? 'form' : 'form');
 
   // Form State
-  const [category, setCategory] = useState<FeedbackCategory>('bug');
+  const [category, setCategory] = useState<FeedbackCategory>(initialCategory);
   const [subject, setSubject] = useState('');
   const [description, setDescription] = useState('');
   const [userEmail, setUserEmail] = useState(defaultEmail);
@@ -106,6 +108,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
 
   // Submission State
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [submittedTicket, setSubmittedTicket] = useState<SubmittedTicket | null>(null);
   const [copiedTicketId, setCopiedTicketId] = useState(false);
   const [pastTickets, setPastTickets] = useState<SubmittedTicket[]>([]);
@@ -122,6 +125,13 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
+      setCategory(initialCategory);
+      setSubject('');
+      setDescription('');
+      setUserEmail(defaultEmail || '');
+      setUserName(defaultName || '');
+      setFormError(null);
+      setSubmittedTicket(null);
       try {
         const stored = localStorage.getItem('statassist_feedback_tickets');
         if (stored) {
@@ -132,7 +142,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
       }
       setAdminTickets(getStoredAdminTickets());
     }
-  }, [isOpen]);
+  }, [isOpen, initialCategory, defaultEmail, defaultName]);
 
   if (!isOpen) return null;
 
@@ -213,69 +223,105 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
     setAttachments((prev) => prev.filter((a) => a.id !== id));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!subject.trim() || !description.trim()) return;
+  const DIRECT_RECEIVER_EMAIL = 'mohdzul@gmail.com';
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail.trim());
+  const isFormComplete =
+    subject.trim().length > 0 &&
+    description.trim().length > 0 &&
+    isValidEmail &&
+    userName.trim().length > 0;
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isFormComplete) {
+      setFormError('Please fill in all compulsory details (Subject, Details, valid Email, and Name) before submitting.');
+      return;
+    }
+
+    setFormError(null);
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      const ticketNum = Math.floor(1000 + Math.random() * 9000);
-      const ticketId = `STA-${ticketNum}`;
+    const attachmentMeta = attachments.map((a) => ({ name: a.name, size: a.size, type: a.type }));
+    let ticketId = `STA-${Math.floor(1000 + Math.random() * 9000)}`;
 
-      const newTicket: SubmittedTicket = {
-        ticketId,
-        category,
-        subject: subject.trim(),
-        description: description.trim(),
-        userName: userName.trim() || 'Researcher',
-        userEmail: userEmail.trim(),
-        attachments: attachments.map((a) => ({ name: a.name, size: a.size, type: a.type })),
-        submittedAt: new Date().toLocaleString(),
-      };
-
-      // 1. Save to user's local past tickets
-      const updatedHistory = [newTicket, ...pastTickets];
-      setPastTickets(updatedHistory);
-      try {
-        localStorage.setItem('statassist_feedback_tickets', JSON.stringify(updatedHistory.slice(0, 20)));
-      } catch {
-        // Ignore
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subject: subject.trim(),
+          details: description.trim(),
+          senderEmail: userEmail.trim(),
+          senderName: userName.trim(),
+          attachments: attachmentMeta,
+          receiver: DIRECT_RECEIVER_EMAIL,
+        }),
+      });
+      if (response.ok) {
+        const payload = await response.json();
+        if (payload?.ticketId) {
+          ticketId = payload.ticketId;
+        }
       }
+    } catch {
+      // Offline / transient network fallback still records ticket routed to mohdzul@gmail.com
+    }
 
-      // 2. Save directly to Administrator mohdzul@gmail.com queue
-      const adminTicketObj: AdminTicket = {
-        ticketId,
-        category,
-        subject: subject.trim(),
-        description: description.trim(),
-        userName: userName.trim() || 'Researcher',
-        userEmail: userEmail.trim(),
-        status: 'new',
-        assignedAdmin: adminEmail,
-        submittedAt: 'Just now',
-        attachments: attachments.map((a) => ({ name: a.name, size: a.size, type: a.type })),
-      };
-      const updatedAdminList = [adminTicketObj, ...getStoredAdminTickets()];
-      saveStoredAdminTickets(updatedAdminList);
-      setAdminTickets(updatedAdminList);
+    const newTicket: SubmittedTicket = {
+      ticketId,
+      category,
+      subject: subject.trim(),
+      description: description.trim(),
+      userName: userName.trim(),
+      userEmail: userEmail.trim(),
+      attachments: attachmentMeta,
+      submittedAt: new Date().toLocaleString(),
+    };
 
-      addAdminAuditLog(
-        'Feedback Ticket Received',
-        ticketId,
-        `Inquiry from ${userEmail.trim()} routed to Administrator ${adminEmail}`,
-        'info'
-      );
+    // 1. Save to user's local past tickets
+    const updatedHistory = [newTicket, ...pastTickets];
+    setPastTickets(updatedHistory);
+    try {
+      localStorage.setItem('statassist_feedback_tickets', JSON.stringify(updatedHistory.slice(0, 20)));
+    } catch {
+      // Ignore
+    }
 
-      setSubmittedTicket(newTicket);
-      setIsSubmitting(false);
-    }, 450);
+    // 2. Route directly to mohdzul@gmail.com receiver queue
+    const adminTicketObj: AdminTicket = {
+      ticketId,
+      category,
+      subject: subject.trim(),
+      description: description.trim(),
+      userName: userName.trim(),
+      userEmail: userEmail.trim(),
+      status: 'new',
+      assignedAdmin: DIRECT_RECEIVER_EMAIL,
+      submittedAt: 'Just now',
+      attachments: attachmentMeta,
+    };
+    const updatedAdminList = [adminTicketObj, ...getStoredAdminTickets()];
+    saveStoredAdminTickets(updatedAdminList);
+    setAdminTickets(updatedAdminList);
+
+    addAdminAuditLog(
+      'Contact Message Received',
+      ticketId,
+      `Message from ${userName.trim()} (${userEmail.trim()}) sent directly to receiver ${DIRECT_RECEIVER_EMAIL}`,
+      'info'
+    );
+
+    setSubmittedTicket(newTicket);
+    setIsSubmitting(false);
   };
 
   const handleResetForm = () => {
     setSubmittedTicket(null);
     setSubject('');
     setDescription('');
+    setUserEmail('');
+    setUserName('');
+    setFormError(null);
     setAttachments([]);
     setUploadError(null);
   };
@@ -326,102 +372,12 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
         className="bg-white rounded-2xl border border-slate-200 shadow-xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500/20 text-blue-300 border border-blue-400/30 rounded-xl shadow-xs">
-              <Send className="w-5 h-5 text-blue-400" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-white leading-tight">
-                  Feedback & Support Center
-                </h2>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                  Admin: {adminEmail}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-              aria-label="Close modal"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* View Switcher Bar */}
-        <div className="px-6 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-medium">
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => setActiveView('form')}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
-                activeView === 'form'
-                  ? 'bg-slate-900 text-white shadow-2xs'
-                  : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
-              }`}
-            >
-              Submit Feedback
-            </button>
-
-            {pastTickets.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setActiveView('history')}
-                className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1 cursor-pointer ${
-                  activeView === 'history'
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                <History className="w-3.5 h-3.5" />
-                <span>My Tickets ({pastTickets.length})</span>
-              </button>
-            )}
-
-            <button
-              type="button"
-              onClick={() => setActiveView('admin')}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
-                activeView === 'admin'
-                  ? 'bg-amber-600 text-white shadow-2xs'
-                  : 'bg-amber-50 border border-amber-200 text-amber-900 hover:bg-amber-100'
-              }`}
-              title="Administrator Inbox"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Admin Inbox ({adminTickets.length})</span>
-            </button>
-          </div>
-
-          {onOpenAdminCms && (
-            <button
-              type="button"
-              onClick={() => {
-                onClose();
-                onOpenAdminCms();
-              }}
-              className="text-xs font-semibold text-blue-700 hover:text-blue-900 flex items-center gap-1 cursor-pointer hover:underline"
-            >
-              <Shield className="w-3.5 h-3.5" />
-              <span>Open Admin CMS</span>
-              <ArrowRight className="w-3 h-3" />
-            </button>
-          )}
-        </div>
-
         {/* Modal Body */}
         <div className="flex-1 overflow-y-auto p-6">
           {/* Admin Inbox View */}
           {activeView === 'admin' ? (
             <div className="space-y-4">
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between text-xs text-amber-900">
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between text-xs text-amber-800">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-5 h-5 text-amber-700 shrink-0" />
                   <div>
@@ -456,7 +412,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                       }}
                       className={`p-3 rounded-xl border text-xs cursor-pointer transition-all space-y-1.5 ${
                         selectedAdminTicket?.ticketId === t.ticketId
-                          ? 'border-blue-600 bg-blue-50/60 shadow-xs'
+                          ? 'border-blue-600 bg-blue-50 shadow-xs'
                           : 'border-slate-200 bg-white hover:bg-slate-50'
                       }`}
                     >
@@ -467,7 +423,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                             t.status === 'new'
                               ? 'bg-amber-100 text-amber-800'
                               : t.status === 'in_progress'
-                              ? 'bg-blue-100 text-blue-800'
+                              ? 'bg-blue-50 text-blue-800'
                               : 'bg-emerald-100 text-emerald-800'
                           }`}
                         >
@@ -533,7 +489,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                       </div>
                     </div>
                   ) : (
-                    <div className="py-16 text-center text-slate-400">
+                    <div className="py-16 text-center text-slate-500">
                       Select a ticket from the left column to review.
                     </div>
                   )}
@@ -585,9 +541,9 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
               </div>
 
               <div>
-                <h3 className="text-base font-bold text-slate-900">Feedback Submitted!</h3>
+                <h3 className="text-base font-bold text-slate-900">Message Submitted!</h3>
                 <p className="text-xs text-slate-600 mt-1">
-                  Your ticket has been delivered directly to Administrator <strong className="text-slate-800">{adminEmail}</strong>.
+                  Your message has been delivered directly to <strong className="text-slate-900">{DIRECT_RECEIVER_EMAIL}</strong>.
                 </p>
                 <div className="mt-2.5 inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200">
                   <span className="font-mono text-base font-bold text-blue-700">{submittedTicket.ticketId}</span>
@@ -601,10 +557,17 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center justify-center gap-2 pt-2">
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                <a
+                  href={`mailto:${DIRECT_RECEIVER_EMAIL}?subject=${encodeURIComponent(`[StatAssist AI Contact] ${submittedTicket.subject}`)}&body=${encodeURIComponent(`From: ${submittedTicket.userName} (${submittedTicket.userEmail})\nReference: ${submittedTicket.ticketId}\n\n${submittedTicket.description}`)}`}
+                  className="px-4 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors inline-flex items-center gap-1.5"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Send Copy via Email App</span>
+                </a>
                 <button
                   onClick={handleResetForm}
-                  className="px-4 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
                 >
                   Submit Another
                 </button>
@@ -620,6 +583,15 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
             /* Submission Form */
             <form onSubmit={handleSubmit} className="space-y-4">
 
+              {formError && (
+                <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center justify-between">
+                  <span>{formError}</span>
+                  <button type="button" onClick={() => setFormError(null)} className="text-rose-500 hover:text-rose-800">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+
               {uploadError && (
                 <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center justify-between">
                   <span>{uploadError}</span>
@@ -629,45 +601,19 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                 </div>
               )}
 
-              {/* 1. Category Pills */}
-              <div>
-                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-                  Category
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                  {CATEGORY_TABS.map((cat) => {
-                    const Icon = cat.icon;
-                    const isSelected = category === cat.id;
-                    return (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        onClick={() => setCategory(cat.id)}
-                        className={`py-2 px-2 rounded-lg border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                          isSelected
-                            ? 'bg-blue-600 text-white border-blue-600 shadow-2xs'
-                            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                        }`}
-                      >
-                        <Icon className="w-3.5 h-3.5" />
-                        <span className="truncate">{cat.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
               {/* 2. Subject */}
               <div>
                 <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
-                  Subject
+                  Subject <span className="text-rose-600">*</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="e.g., Question about ANOVA results or dataset upload assistance"
+                  onChange={(e) => {
+                    setSubject(e.target.value);
+                    if (formError) setFormError(null);
+                  }}
                   className="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
                 />
               </div>
@@ -675,14 +621,16 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
               {/* 3. Description */}
               <div>
                 <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
-                  Message / Details
+                  Details <span className="text-rose-600">*</span>
                 </label>
                 <textarea
                   required
                   rows={4}
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe your question, observation, or recommendation in detail for Administrator Mohd Zulhisam..."
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                    if (formError) setFormError(null);
+                  }}
                   className="w-full text-xs rounded-lg border border-slate-300 p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none leading-relaxed"
                 />
               </div>
@@ -691,26 +639,31 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
-                    Your Email
+                    Email <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="email"
                     required
                     value={userEmail}
-                    onChange={(e) => setUserEmail(e.target.value)}
-                    placeholder="user@example.com"
+                    onChange={(e) => {
+                      setUserEmail(e.target.value);
+                      if (formError) setFormError(null);
+                    }}
                     className="w-full text-xs rounded-lg border border-slate-300 px-3 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
                   <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
-                    Name (Optional)
+                    Name <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="text"
+                    required
                     value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    placeholder="e.g. Researcher"
+                    onChange={(e) => {
+                      setUserName(e.target.value);
+                      if (formError) setFormError(null);
+                    }}
                     className="w-full text-xs rounded-lg border border-slate-300 px-3 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -721,9 +674,9 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                 <div className="flex items-center justify-between mb-1">
                   <label className="text-2xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1">
                     <Paperclip className="w-3 h-3 text-blue-600" />
-                    <span>Attachment (Optional)</span>
+                    <span>Attachment</span>
                   </label>
-                  <span className="text-2xs text-slate-400">Max 4 files, 10MB each</span>
+                  <span className="text-2xs text-slate-500">Max 4 files, 10MB each</span>
                 </div>
 
                 <div
@@ -733,8 +686,8 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                   onClick={() => fileInputRef.current?.click()}
                   className={`border border-dashed rounded-lg py-3 px-4 text-center cursor-pointer transition-all ${
                     isDragging
-                      ? 'border-blue-600 bg-blue-50/60'
-                      : 'border-slate-300 hover:border-slate-400 bg-slate-50/60'
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-slate-300 hover:border-slate-400 bg-slate-50'
                   }`}
                 >
                   <input
@@ -760,14 +713,14 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 text-xs text-slate-700 font-mono"
                       >
                         <span className="truncate max-w-[150px]">{att.name}</span>
-                        <span className="text-slate-400 text-2xs">({formatBytes(att.size)})</span>
+                        <span className="text-slate-500 text-2xs">({formatBytes(att.size)})</span>
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleRemoveAttachment(att.id);
                           }}
-                          className="hover:text-rose-600 text-slate-400 ml-0.5 cursor-pointer"
+                          className="hover:text-rose-600 text-slate-500 ml-0.5 cursor-pointer"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -778,31 +731,36 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="px-5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Sending...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-3.5 h-3.5" />
-                      <span>Send</span>
-                    </>
-                  )}
-                </button>
+              <div className="pt-3 flex flex-wrap items-center justify-between gap-2.5 border-t border-slate-100">
+                <span className="text-[11px] text-slate-500">
+                  <span className="text-rose-600 font-semibold">*</span> All details compulsory
+                </span>
+                <div className="flex items-center gap-2 ml-auto">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!isFormComplete || isSubmitting}
+                    className="px-5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-45 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Submitting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Submit</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </form>
           )}

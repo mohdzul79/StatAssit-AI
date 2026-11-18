@@ -453,17 +453,17 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-200">
-      <div className="bg-white rounded-xl shadow-xl max-w-5xl w-full border border-slate-200/90 overflow-hidden flex flex-col max-h-[92vh] text-slate-800">
+      <div className="bg-white rounded-xl shadow-xl max-w-5xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] text-slate-800">
         
         {/* Modern Minimalist Header */}
-        <div className="px-6 py-4 border-b border-slate-200/80 bg-white flex items-center justify-between shrink-0">
+        <div className="px-6 py-4 border-b border-slate-200 bg-white flex items-center justify-between shrink-0">
           <div>
             <h2 className="text-base font-semibold tracking-tight text-slate-900">
               Usability & SUS Evaluation
             </h2>
             <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
               <span>Brooke (1996) System Usability Scale</span>
-              <span className="text-slate-300">·</span>
+              <span className="text-slate-600">·</span>
               <span>Google Sheets Integration</span>
             </div>
           </div>
@@ -478,7 +478,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                 </>
               ) : (
                 <>
-                  <span className="w-2 h-2 rounded-full bg-slate-300" />
+                  <span className="w-2 h-2 rounded-full bg-slate-700" />
                   <span className="text-slate-500">Ready to Connect</span>
                 </>
               )}
@@ -486,7 +486,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
 
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-slate-700 rounded-md hover:bg-slate-100 transition-colors cursor-pointer"
+              className="p-1.5 text-slate-500 hover:text-slate-700 rounded-md hover:bg-slate-100 transition-colors cursor-pointer"
               aria-label="Close modal"
             >
               <X className="w-4 h-4" />
@@ -495,7 +495,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
         </div>
 
         {/* Minimal Understated Tab Navigation */}
-        <div className="flex border-b border-slate-200/80 bg-white px-6 gap-6 shrink-0 overflow-x-auto text-xs">
+        <div className="flex border-b border-slate-200 bg-white px-6 gap-6 shrink-0 overflow-x-auto text-xs">
           <button
             onClick={() => setActiveTab('google-form')}
             className={`py-3 font-medium transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
@@ -522,18 +522,18 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/40">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50">
           
           {/* Subtle Notification Banner */}
           {sheetNotice && (
-            <div className="p-3 rounded-lg bg-emerald-50/80 border border-emerald-200/80 text-emerald-900 flex items-center gap-2 text-xs">
+            <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-2 text-xs">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>{sheetNotice}</span>
             </div>
           )}
 
           {authError && (
-            <div className="p-3 rounded-lg bg-rose-50/80 border border-rose-200 text-rose-900 flex items-center justify-between gap-2 text-xs">
+            <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 flex items-center justify-between gap-2 text-xs">
               <div className="flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
                 <span>{authError}</span>
@@ -541,7 +541,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
               <button
                 type="button"
                 onClick={() => setAuthError(null)}
-                className="text-rose-700 hover:text-rose-900 font-medium"
+                className="text-rose-700 hover:text-rose-800 font-medium"
               >
                 Dismiss
               </button>
@@ -553,12 +553,12 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
             <div className="space-y-5">
               
               {/* Sleek Integration Summary Card (Linear/Stripe style) */}
-              <div className="p-5 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-4">
+              <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-semibold text-slate-900">Google Sheets Integration</span>
-                      <span className="text-slate-300">·</span>
+                      <span className="text-slate-600">·</span>
                       <div className="flex items-center gap-1.5 text-xs">
                         {sheetDatabase ? (
                           <>
@@ -567,7 +567,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                           </>
                         ) : (
                           <>
-                            <span className="w-2 h-2 rounded-full bg-slate-300" />
+                            <span className="w-2 h-2 rounded-full bg-slate-700" />
                             <span className="text-slate-500">Ready to Connect</span>
                           </>
                         )}
@@ -577,17 +577,17 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                     <div className="text-xs text-slate-500 space-y-1">
                       <div>
                         Target Spreadsheet:{' '}
-                        <code className="font-mono text-2xs bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded border border-slate-200/70 font-medium">
+                        <code className="font-mono text-2xs bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded border border-slate-200 font-medium">
                           StatAssist AI — Usability Test Database (Responses)
                         </code>
                       </div>
                       <div className="flex items-center gap-1 text-2xs text-slate-500">
                         <span>Destination Tabs:</span>
-                        <code className="font-mono bg-slate-100 text-slate-700 px-1 py-0.5 rounded border border-slate-200/70">
+                        <code className="font-mono bg-slate-100 text-slate-700 px-1 py-0.5 rounded border border-slate-200">
                           Database_Responses
                         </code>
-                        <span className="text-slate-300">·</span>
-                        <code className="font-mono bg-slate-100 text-slate-700 px-1 py-0.5 rounded border border-slate-200/70">
+                        <span className="text-slate-600">·</span>
+                        <code className="font-mono bg-slate-100 text-slate-700 px-1 py-0.5 rounded border border-slate-200">
                           Benchmark_Summary
                         </code>
                       </div>
@@ -599,7 +599,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                       <div className="flex items-center gap-2.5">
                         <div className="text-right hidden sm:block">
                           <div className="text-xs font-medium text-slate-800">{googleUser.displayName || 'Authorized'}</div>
-                          <div className="text-2xs text-slate-400 font-mono">{googleUser.email}</div>
+                          <div className="text-2xs text-slate-500 font-mono">{googleUser.email}</div>
                         </div>
                         <button
                           type="button"
@@ -624,7 +624,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                           </>
                         ) : (
                           <>
-                            <FileSpreadsheet className="w-3.5 h-3.5 text-slate-200" />
+                            <FileSpreadsheet className="w-3.5 h-3.5 text-slate-700" />
                             <span>Connect Google Sheets</span>
                           </>
                         )}
@@ -645,7 +645,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                       >
                         <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
                         <span>Open Google Sheet</span>
-                        <ExternalLink className="w-3 h-3 text-slate-400" />
+                        <ExternalLink className="w-3 h-3 text-slate-500" />
                       </a>
 
                       {googleFormInfo && (
@@ -657,7 +657,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                         >
                           <Share2 className="w-3.5 h-3.5 text-purple-600" />
                           <span>Open Public Form</span>
-                          <ExternalLink className="w-3 h-3 text-slate-400" />
+                          <ExternalLink className="w-3 h-3 text-slate-500" />
                         </a>
                       )}
                     </div>
@@ -679,14 +679,14 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 
                 {/* CARD 1: Responses Sheet */}
-                <div className="p-4 rounded-xl border border-slate-200/90 bg-white shadow-2xs flex flex-col justify-between space-y-4">
+                <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-2xs flex flex-col justify-between space-y-4">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Database className="w-4 h-4 text-slate-700" />
                         <h4 className="font-semibold text-xs text-slate-900">Responses Database</h4>
                       </div>
-                      <span className="font-mono text-2xs text-slate-400">tab: {SHEET_TAB_NAME}</span>
+                      <span className="font-mono text-2xs text-slate-500">tab: {SHEET_TAB_NAME}</span>
                     </div>
 
                     <p className="text-xs text-slate-500 leading-relaxed">
@@ -696,19 +696,19 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                     {/* Clean Metrics Strip */}
                     <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-around text-center text-xs">
                       <div>
-                        <div className="text-3xs uppercase tracking-wider text-slate-400 font-medium">Local Rows</div>
+                        <div className="text-3xs uppercase tracking-wider text-slate-500 font-medium">Local Rows</div>
                         <div className="font-semibold font-mono text-slate-800 text-sm">{storedList.length}</div>
                       </div>
-                      <div className="w-px h-6 bg-slate-200" />
+                      <div className="w-px h-6 bg-slate-100" />
                       <div>
-                        <div className="text-3xs uppercase tracking-wider text-slate-400 font-medium">Avg SUS</div>
+                        <div className="text-3xs uppercase tracking-wider text-slate-500 font-medium">Avg SUS</div>
                         <div className="font-semibold font-mono text-slate-800 text-sm">
                           {aggregateStats ? aggregateStats.avgSus : '68.0'}
                         </div>
                       </div>
-                      <div className="w-px h-6 bg-slate-200" />
+                      <div className="w-px h-6 bg-slate-100" />
                       <div>
-                        <div className="text-3xs uppercase tracking-wider text-slate-400 font-medium">Target</div>
+                        <div className="text-3xs uppercase tracking-wider text-slate-500 font-medium">Target</div>
                         <div className="font-semibold font-mono text-slate-500 text-sm">&gt; 68.0</div>
                       </div>
                     </div>
@@ -747,14 +747,14 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                 </div>
 
                 {/* CARD 2: Google Form */}
-                <div className="p-4 rounded-xl border border-slate-200/90 bg-white shadow-2xs flex flex-col justify-between space-y-4">
+                <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-2xs flex flex-col justify-between space-y-4">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Share2 className="w-4 h-4 text-slate-700" />
                         <h4 className="font-semibold text-xs text-slate-900">Google Form Survey</h4>
                       </div>
-                      <span className="font-mono text-2xs text-slate-400">
+                      <span className="font-mono text-2xs text-slate-500">
                         {googleFormInfo ? 'connected' : 'unlinked'}
                       </span>
                     </div>
@@ -772,7 +772,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                           className="text-xs text-slate-700 hover:text-slate-900 font-medium flex items-center justify-between"
                         >
                           <span>Open Public Survey</span>
-                          <ExternalLink className="w-3 h-3 text-slate-400" />
+                          <ExternalLink className="w-3 h-3 text-slate-500" />
                         </a>
                         <a
                           href={googleFormInfo.editUri}
@@ -781,7 +781,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                           className="text-xs text-slate-500 hover:text-slate-700 flex items-center justify-between"
                         >
                           <span>Edit in Google Forms</span>
-                          <ExternalLink className="w-3 h-3 text-slate-400" />
+                          <ExternalLink className="w-3 h-3 text-slate-500" />
                         </a>
                       </div>
                     )}
@@ -810,14 +810,14 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                 </div>
 
                 {/* CARD 3: Psychometric Formulas */}
-                <div className="p-4 rounded-xl border border-slate-200/90 bg-white shadow-2xs flex flex-col justify-between space-y-4">
+                <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-2xs flex flex-col justify-between space-y-4">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <BarChart3 className="w-4 h-4 text-slate-700" />
                         <h4 className="font-semibold text-xs text-slate-900">Benchmark Formulas</h4>
                       </div>
-                      <span className="font-mono text-2xs text-slate-400">tab: Benchmark_Summary</span>
+                      <span className="font-mono text-2xs text-slate-500">tab: Benchmark_Summary</span>
                     </div>
 
                     <p className="text-xs text-slate-500 leading-relaxed">
@@ -854,8 +854,8 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
               </div>
 
               {/* Data Flow Architecture Note */}
-              <div className="p-3.5 rounded-lg bg-white border border-slate-200/80 text-xs text-slate-500 flex items-start gap-2.5">
-                <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-500 flex items-start gap-2.5">
+                <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
                   Evaluations are recorded into <code className="font-mono text-2xs text-slate-700 font-medium">Database_Responses</code> and aggregated against Brooke (1996) benchmarks in <code className="font-mono text-2xs text-slate-700 font-medium">Benchmark_Summary</code> with zero intermediate locks.
                 </p>
@@ -868,7 +868,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
             <div className="space-y-5">
               {/* Submission Confirmation Banner */}
               {isSubmitted && (
-                <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs space-y-2">
+                <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs space-y-2">
                   <div className="flex items-center gap-2 font-medium">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     <span>Evaluation recorded successfully: SUS Score {susMetric.score} / 100 ({susMetric.grade} · {susMetric.adjective}).</span>
@@ -882,7 +882,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                     <button
                       type="button"
                       onClick={() => setIsSubmitted(false)}
-                      className="px-2.5 py-1 rounded bg-white border border-emerald-300 text-emerald-900 text-2xs font-medium cursor-pointer"
+                      className="px-2.5 py-1 rounded bg-white border border-emerald-200 text-emerald-800 text-2xs font-medium cursor-pointer"
                     >
                       Edit Answers
                     </button>
@@ -898,27 +898,27 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
               )}
 
               {/* Minimalist SUS Score Strip */}
-              <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <div className="text-2xs text-slate-400 uppercase tracking-wider font-medium">Live Psychometric Metric</div>
+                  <div className="text-2xs text-slate-500 uppercase tracking-wider font-medium">Live Psychometric Metric</div>
                   <div className="flex items-baseline gap-2 mt-0.5">
                     <span className="text-2xl font-bold font-mono text-slate-900">{susMetric.score}</span>
-                    <span className="text-xs text-slate-400">/ 100</span>
-                    <span className="text-xs text-slate-300">·</span>
+                    <span className="text-xs text-slate-500">/ 100</span>
+                    <span className="text-xs text-slate-600">·</span>
                     <span className="text-xs font-semibold text-slate-700">Grade {susMetric.grade}</span>
-                    <span className="text-xs text-slate-300">·</span>
+                    <span className="text-xs text-slate-600">·</span>
                     <span className="text-xs text-slate-600">{susMetric.adjective}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4 text-xs text-slate-500 font-mono">
                   <div>
-                    <span className="text-slate-400">Percentile: </span>
+                    <span className="text-slate-500">Percentile: </span>
                     <span className="font-semibold text-slate-800">~{susMetric.percentile}%</span>
                   </div>
-                  <span className="text-slate-300">·</span>
+                  <span className="text-slate-600">·</span>
                   <div>
-                    <span className="text-slate-400">Industry Avg: </span>
+                    <span className="text-slate-500">Industry Avg: </span>
                     <span className="font-semibold text-slate-800">68.0</span>
                   </div>
                 </div>
@@ -927,7 +927,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
               {/* Form Content */}
               <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Section 1: Demographics */}
-                <div className="bg-white border border-slate-200/90 rounded-xl p-4 sm:p-5 space-y-4 shadow-2xs">
+                <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 space-y-4 shadow-2xs">
                   <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
                     <UserCheck className="w-4 h-4 text-slate-600" />
                     <h4 className="font-semibold text-xs text-slate-900">
@@ -1022,7 +1022,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                 </div>
 
                 {/* Section 2: 10 SUS Questions */}
-                <div className="bg-white border border-slate-200/90 rounded-xl p-4 sm:p-5 space-y-4 shadow-2xs">
+                <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 space-y-4 shadow-2xs">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                     <div className="flex items-center gap-2">
                       <Sliders className="w-4 h-4 text-slate-600" />
@@ -1030,7 +1030,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                         2. System Usability Scale (SUS) 10-Item Instrument
                       </h4>
                     </div>
-                    <span className="text-2xs text-slate-400">1 = Strongly Disagree, 5 = Strongly Agree</span>
+                    <span className="text-2xs text-slate-500">1 = Strongly Disagree, 5 = Strongly Agree</span>
                   </div>
 
                   <div className="space-y-3">
@@ -1039,10 +1039,10 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                       return (
                         <div
                           key={item.id}
-                          className="p-3 rounded-lg border border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                          className="p-3 rounded-lg border border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                         >
                           <div className="text-xs text-slate-800">
-                            <span className="font-mono text-slate-400 mr-2">{item.id}.</span>
+                            <span className="font-mono text-slate-500 mr-2">{item.id}.</span>
                             <span>{item.text}</span>
                           </div>
 
@@ -1069,7 +1069,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                 </div>
 
                 {/* Section 3: Task Ratings */}
-                <div className="bg-white border border-slate-200/90 rounded-xl p-4 sm:p-5 space-y-4 shadow-2xs">
+                <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 space-y-4 shadow-2xs">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                     <div className="flex items-center gap-2">
                       <ClipboardCheck className="w-4 h-4 text-slate-600" />
@@ -1085,7 +1085,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                       return (
                         <div
                           key={task.id}
-                          className="p-3 rounded-lg border border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                          className="p-3 rounded-lg border border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                         >
                           <div>
                             <div className="text-xs font-semibold text-slate-900">{task.taskTitle}</div>
@@ -1115,7 +1115,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                 </div>
 
                 {/* Section 4: Qualitative & NPS */}
-                <div className="bg-white border border-slate-200/90 rounded-xl p-4 sm:p-5 space-y-4 shadow-2xs">
+                <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 space-y-4 shadow-2xs">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-slate-600" />
@@ -1148,7 +1148,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                         </button>
                       ))}
                     </div>
-                    <div className="flex justify-between text-3xs text-slate-400 mt-1">
+                    <div className="flex justify-between text-3xs text-slate-500 mt-1">
                       <span>0 - Not likely</span>
                       <span>10 - Extremely likely</span>
                     </div>
@@ -1197,7 +1197,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
 
           {/* TAB 3: GOOGLE FORM LINK */}
           {activeTab === 'google-form' && (
-            <div className="p-5 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-4">
+            <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <h3 className="text-sm font-semibold text-slate-900">Google Form Public Link</h3>
@@ -1217,7 +1217,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                 </a>
               </div>
 
-              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200/70 flex items-center justify-between gap-3 text-xs font-mono">
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between gap-3 text-xs font-mono">
                 <div className="truncate text-slate-700 select-all">{googleFormUrl}</div>
                 <button
                   type="button"
@@ -1231,7 +1231,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                     </>
                   ) : (
                     <>
-                      <Copy className="w-3.5 h-3.5 text-slate-400" />
+                      <Copy className="w-3.5 h-3.5 text-slate-500" />
                       <span>Copy</span>
                     </>
                   )}
@@ -1242,7 +1242,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
 
           {/* TAB 4: GOOGLE APPS SCRIPT */}
           {activeTab === 'script' && (
-            <div className="p-5 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-4">
+            <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-semibold text-slate-900">Google Apps Script Generator</h3>
@@ -1258,7 +1258,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                 >
                   {copiedScript ? (
                     <>
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
                       <span>Copied</span>
                     </>
                   ) : (
@@ -1270,7 +1270,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                 </button>
               </div>
 
-              <pre className="p-4 rounded-lg bg-slate-900 text-slate-200 font-mono text-2xs overflow-x-auto max-h-[360px] leading-relaxed">
+              <pre className="p-4 rounded-lg bg-slate-900 text-slate-100 font-mono text-2xs overflow-x-auto max-h-[360px] leading-relaxed">
                 {generateGoogleAppsScriptForForm()}
               </pre>
             </div>
@@ -1278,7 +1278,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
 
           {/* TAB 5: QUESTIONNAIRE SPEC */}
           {activeTab === 'instrument' && (
-            <div className="p-5 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-4">
+            <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-4">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900">Brooke (1996) System Usability Scale Spec</h3>
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -1298,7 +1298,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                   <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
                     {SUS_QUESTIONS.map((q) => (
                       <tr key={q.id}>
-                        <td className="px-3 py-2 font-mono text-slate-400">{q.id}</td>
+                        <td className="px-3 py-2 font-mono text-slate-500">{q.id}</td>
                         <td className="px-3 py-2">{q.text}</td>
                         <td className="px-3 py-2 font-mono text-2xs text-slate-500">
                           {q.isPositive ? '+ Positive' : '- Negative'}
@@ -1341,16 +1341,16 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                   {storedList.map((resp) => (
                     <div
                       key={resp.id}
-                      className="p-3.5 rounded-lg border border-slate-200/90 bg-white shadow-2xs space-y-1.5 text-xs"
+                      className="p-3.5 rounded-lg border border-slate-200 bg-white shadow-2xs space-y-1.5 text-xs"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-slate-900">{resp.participantName}</span>
-                          <span className="text-slate-300">·</span>
+                          <span className="text-slate-600">·</span>
                           <span className="text-2xs text-slate-500 font-mono">
                             {new Date(resp.submittedAt).toLocaleDateString()}
                           </span>
-                          <span className="text-slate-300">·</span>
+                          <span className="text-slate-600">·</span>
                           <span className="text-2xs text-slate-500">{resp.participantRole}</span>
                         </div>
 
@@ -1371,7 +1371,7 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
                   ))}
                 </div>
               ) : (
-                <div className="p-8 text-center rounded-lg border border-dashed border-slate-200 bg-white text-xs text-slate-400">
+                <div className="p-8 text-center rounded-lg border border-dashed border-slate-200 bg-white text-xs text-slate-500">
                   No evaluations recorded yet. Fill out the in-app survey or connect to Google Sheets.
                 </div>
               )}
@@ -1380,12 +1380,12 @@ export const UsabilityTestModal: React.FC<UsabilityTestModalProps> = ({
         </div>
 
         {/* Minimal Understated Footer */}
-        <div className="px-6 py-3 border-t border-slate-200/80 bg-white flex items-center justify-between text-xs text-slate-500 shrink-0">
+        <div className="px-6 py-3 border-t border-slate-200 bg-white flex items-center justify-between text-xs text-slate-500 shrink-0">
           <div className="flex items-center gap-2">
             <span>System Usability Scale</span>
-            <span className="text-slate-300">·</span>
+            <span className="text-slate-600">·</span>
             <span>Brooke (1996)</span>
-            <span className="text-slate-300">·</span>
+            <span className="text-slate-600">·</span>
             <span>Google Sheets</span>
           </div>
 

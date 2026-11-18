@@ -728,7 +728,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex items-center gap-1.5 p-1.5 bg-slate-800/90 rounded-xl border border-slate-700 self-start lg:self-center shrink-0">
+          <div className="flex items-center gap-1.5 p-1.5 bg-slate-800/80 rounded-xl border border-slate-700 self-start lg:self-center shrink-0">
             <button
               onClick={() => setViewMode('guided')}
               className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${
@@ -771,7 +771,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                 </span>
                 <span className="text-xs font-medium text-slate-700">Research Goal</span>
               </div>
-              <div className="h-0.5 w-8 bg-slate-200 shrink-0" />
+              <div className="h-0.5 w-8 bg-slate-100 shrink-0" />
 
               <div className="flex items-center gap-2 shrink-0">
                 <span
@@ -783,7 +783,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                 </span>
                 <span className="text-xs font-medium text-slate-700">Outcome Scale (DV)</span>
               </div>
-              <div className="h-0.5 w-8 bg-slate-200 shrink-0" />
+              <div className="h-0.5 w-8 bg-slate-100 shrink-0" />
 
               <div className="flex items-center gap-2 shrink-0">
                 <span
@@ -795,7 +795,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                 </span>
                 <span className="text-xs font-medium text-slate-700">Design & Groups (IV)</span>
               </div>
-              <div className="h-0.5 w-8 bg-slate-200 shrink-0" />
+              <div className="h-0.5 w-8 bg-slate-100 shrink-0" />
 
               <div className="flex items-center gap-2 shrink-0">
                 <span
@@ -844,7 +844,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                         setGoal('rel');
                         setCurrentStep(2);
                       }}
-                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50/20 transition-all group flex flex-col justify-between"
+                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50 transition-all group flex flex-col justify-between"
                     >
                       <div className="space-y-2">
                         <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors">
@@ -868,7 +868,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                         setGoal('pred');
                         setCurrentStep(2);
                       }}
-                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50/20 transition-all group flex flex-col justify-between"
+                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50 transition-all group flex flex-col justify-between"
                     >
                       <div className="space-y-2">
                         <div className="w-9 h-9 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center group-hover:bg-purple-600 group-hover:text-white transition-colors">
@@ -892,7 +892,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                         setGoal('cat');
                         setCurrentStep(2);
                       }}
-                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50/20 transition-all group flex flex-col justify-between"
+                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50 transition-all group flex flex-col justify-between"
                     >
                       <div className="space-y-2">
                         <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors">
@@ -916,7 +916,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                         setGoal('desc');
                         setCurrentStep(2);
                       }}
-                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50/20 transition-all group flex flex-col justify-between md:col-span-2"
+                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50 transition-all group flex flex-col justify-between md:col-span-2"
                     >
                       <div className="space-y-2">
                         <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
@@ -977,10 +977,10 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                           setCurrentStep(4);
                         }
                       }}
-                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50/20 transition-all group flex flex-col justify-between"
+                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50 transition-all group flex flex-col justify-between"
                     >
                       <div className="space-y-2">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-blue-100 text-blue-800">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-blue-50 text-blue-800">
                           Continuous
                         </span>
                         <div className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors">
@@ -1005,7 +1005,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                           setCurrentStep(4);
                         }
                       }}
-                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50/20 transition-all group flex flex-col justify-between"
+                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50 transition-all group flex flex-col justify-between"
                     >
                       <div className="space-y-2">
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-100 text-amber-800">
@@ -1030,7 +1030,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                         // Categorical outcome points to Chi-square
                         setCurrentStep(4);
                       }}
-                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50/20 transition-all group flex flex-col justify-between"
+                      className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50 transition-all group flex flex-col justify-between"
                     >
                       <div className="space-y-2">
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-purple-100 text-purple-800">
@@ -1087,10 +1087,10 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                           setPredictorCount('single');
                           setCurrentStep(4);
                         }}
-                        className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50/20 transition-all group flex flex-col justify-between"
+                        className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50 transition-all group flex flex-col justify-between"
                       >
                         <div className="space-y-2">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-blue-100 text-blue-800">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-blue-50 text-blue-800">
                             1 Predictor (IV)
                           </span>
                           <div className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors">
@@ -1111,7 +1111,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                           setPredictorCount('multiple');
                           setCurrentStep(4);
                         }}
-                        className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50/20 transition-all group flex flex-col justify-between"
+                        className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50 transition-all group flex flex-col justify-between"
                       >
                         <div className="space-y-2">
                           <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-purple-100 text-purple-800">
@@ -1138,10 +1138,10 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                           setGroupCount('2_groups');
                           setCurrentStep(4);
                         }}
-                        className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50/20 transition-all group flex flex-col justify-between"
+                        className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50 transition-all group flex flex-col justify-between"
                       >
                         <div className="space-y-2">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-blue-100 text-blue-800">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-blue-50 text-blue-800">
                             Between-Subjects
                           </span>
                           <div className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors">
@@ -1163,7 +1163,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                           setGroupCount('3_plus');
                           setCurrentStep(4);
                         }}
-                        className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50/20 transition-all group flex flex-col justify-between"
+                        className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50 transition-all group flex flex-col justify-between"
                       >
                         <div className="space-y-2">
                           <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-indigo-100 text-indigo-800">
@@ -1188,7 +1188,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                           setGroupCount('2_groups');
                           setCurrentStep(4);
                         }}
-                        className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50/20 transition-all group flex flex-col justify-between"
+                        className="text-left p-5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50 transition-all group flex flex-col justify-between"
                       >
                         <div className="space-y-2">
                           <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-purple-100 text-purple-800">
@@ -1218,7 +1218,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-blue-100 text-blue-800 border border-blue-200">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-blue-50 text-blue-800 border border-blue-200">
                       Empirical Diagnostic Result
                     </span>
                     <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
@@ -1247,7 +1247,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                         <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 font-mono">
                           Pre-Set Study Ready for Step 2
                         </span>
-                        <span className="text-2xs font-bold bg-blue-100 text-blue-900 px-2 py-0.5 rounded-md border border-blue-200">
+                        <span className="text-2xs font-bold bg-blue-50 text-blue-800 px-2 py-0.5 rounded-md border border-blue-200">
                           {TEST_STUDY_PRESETS[activeTestDetails.testId].dataset.totalRows} cases
                         </span>
                       </div>
@@ -1274,7 +1274,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                       className="px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors flex items-center gap-1.5 shrink-0 shadow-xs cursor-pointer"
                       title="Fill complete pre-set study including research questions and link to Step 2"
                     >
-                      <Database className="w-3.5 h-3.5 text-blue-200" />
+                      <Database className="w-3.5 h-3.5 text-blue-800" />
                       <span>Link into 'Dataset'</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
@@ -1323,14 +1323,14 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                 </div>
 
                 {/* Right: Academic Hypotheses Formulated */}
-                <div className="bg-blue-50/50 rounded-xl p-5 border border-blue-200 space-y-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
+                <div className="bg-blue-50 rounded-xl p-5 border border-blue-200 space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-blue-800 flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-blue-600" />
                     <span>Empirical Hypotheses Formulation</span>
                   </h3>
 
                   <div className="space-y-3 text-xs">
-                    <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-2xs">
+                    <div className="bg-white p-3 rounded-lg border border-blue-200 shadow-2xs">
                       <div className="font-bold text-slate-900 font-mono text-[11px] text-blue-700">
                         NULL HYPOTHESIS (H₀)
                       </div>
@@ -1339,7 +1339,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                       </p>
                     </div>
 
-                    <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-2xs">
+                    <div className="bg-white p-3 rounded-lg border border-blue-200 shadow-2xs">
                       <div className="font-bold text-slate-900 font-mono text-[11px] text-indigo-700">
                         ALTERNATIVE HYPOTHESIS (H₁)
                       </div>
@@ -1380,7 +1380,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                         <span className="text-[11px] font-bold font-mono text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
                           Assumption #{assump.number}
                         </span>
-                        <span className="text-[11px] text-slate-400 font-mono">
+                        <span className="text-[11px] text-slate-500 font-mono">
                           {assump.howToCheck}
                         </span>
                       </div>
@@ -1398,7 +1398,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
               {/* APA 7th Edition Reporting Syntax & Master Example */}
               <div className="bg-slate-900 text-white rounded-xl p-5 space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-200 uppercase tracking-wider">
+                  <span className="font-bold text-slate-300 uppercase tracking-wider">
                     APA 7th Edition Reporting Template
                   </span>
                   <span className="font-mono text-emerald-400 text-[11px]">
@@ -1406,7 +1406,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                   </span>
                 </div>
 
-                <div className="bg-slate-950 p-3 rounded-lg font-mono text-xs text-blue-300 border border-slate-800">
+                <div className="bg-slate-950 p-3 rounded-lg font-mono text-xs text-emerald-300 border border-slate-800">
                   {activeTestDetails.apaSyntax}
                 </div>
 
@@ -1450,7 +1450,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                     className="px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
                     title="Fill complete pre-set study including research questions and link to Step 2"
                   >
-                    <Database className="w-3.5 h-3.5 text-blue-200" />
+                    <Database className="w-3.5 h-3.5 text-blue-800" />
                     <span>Link into 'Dataset'</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
@@ -1469,7 +1469,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               {/* Search */}
               <div className="relative flex-1 max-w-md">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -1545,7 +1545,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                   onClick={() => setActiveCategoryFilter('reliability')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                     activeCategoryFilter === 'reliability'
-                      ? 'bg-teal-600 text-white shadow-xs'
+                      ? 'bg-teal-600 text-slate-900 shadow-xs'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
@@ -1555,7 +1555,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                   onClick={() => setActiveCategoryFilter('data_reduction')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                     activeCategoryFilter === 'data_reduction'
-                      ? 'bg-violet-600 text-white shadow-xs'
+                      ? 'bg-violet-600 text-slate-900 shadow-xs'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
@@ -1640,8 +1640,8 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
 
                       {/* Associated study preset preview */}
                       {TEST_STUDY_PRESETS[graph.associatedTestId] && (
-                        <div className="bg-fuchsia-50/60 border border-fuchsia-100 rounded-lg p-2.5 space-y-1">
-                          <div className="flex items-center gap-1.5 text-[11px] font-bold text-fuchsia-950">
+                        <div className="bg-fuchsia-50 border border-fuchsia-200 rounded-lg p-2.5 space-y-1">
+                          <div className="flex items-center gap-1.5 text-[11px] font-bold text-fuchsia-800">
                             <Database className="w-3.5 h-3.5 text-fuchsia-700 shrink-0" />
                             <span className="truncate">
                               Pre-Set Dataset: {TEST_STUDY_PRESETS[graph.associatedTestId].datasetName}
@@ -1720,8 +1720,8 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
 
                     {/* Pre-set study mapping */}
                     {TEST_STUDY_PRESETS[test.testId] && (
-                      <div className="bg-blue-50/70 border border-blue-100 rounded-lg p-2.5 space-y-1">
-                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-blue-900">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5 space-y-1">
+                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-blue-800">
                           <Database className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                           <span className="truncate">
                             Pre-Set: {TEST_STUDY_PRESETS[test.testId].datasetName}
@@ -1814,20 +1814,20 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                   <span className="px-2 py-0.5 rounded-md text-2xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-400/30">
                     {previewPreset.dataset.columns.length} Variables
                   </span>
-                  <span className="px-2 py-0.5 rounded-md text-2xs font-semibold bg-slate-700 text-slate-300 border border-slate-600 font-mono">
+                  <span className="px-2 py-0.5 rounded-md text-2xs font-semibold bg-slate-700 text-slate-200 border border-slate-600 font-mono">
                     α = {previewPreset.alphaLevel ?? 0.05}
                   </span>
                 </div>
                 <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                   {previewPreset.datasetName}
                 </h2>
-                <p className="text-xs text-blue-200/80 leading-relaxed max-w-2xl">
+                <p className="text-xs text-blue-100/80 leading-relaxed max-w-2xl">
                   {previewPreset.explanation}
                 </p>
               </div>
               <button
                 onClick={() => setPreviewPreset(null)}
-                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer shrink-0"
                 aria-label="Close Preview"
               >
                 <X className="w-5 h-5" />
@@ -1860,7 +1860,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
 
                 {/* Research Question */}
                 <div className="bg-white p-3.5 rounded-lg border border-slate-200 shadow-2xs space-y-1">
-                  <div className="text-2xs font-bold uppercase tracking-wider text-slate-400 font-mono">
+                  <div className="text-2xs font-bold uppercase tracking-wider text-slate-500 font-mono">
                     Inquiry / Research Question:
                   </div>
                   <p className="text-sm font-semibold text-slate-800 leading-snug">
@@ -1870,22 +1870,22 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
 
                 {/* Hypotheses Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="bg-emerald-50/70 border border-emerald-200 rounded-lg p-3 space-y-1">
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 space-y-1">
                     <div className="flex items-center gap-1.5 text-emerald-800 font-bold text-2xs uppercase tracking-wider">
                       <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                       Null Hypothesis (H₀)
                     </div>
-                    <p className="text-xs text-emerald-950 font-medium leading-relaxed font-mono">
+                    <p className="text-xs text-emerald-900 font-medium leading-relaxed font-mono">
                       {previewPreset.researchQuestion.hypothesisNull || 'H₀: No significant effect / association.'}
                     </p>
                   </div>
 
-                  <div className="bg-blue-50/70 border border-blue-200 rounded-lg p-3 space-y-1">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-1">
                     <div className="flex items-center gap-1.5 text-blue-800 font-bold text-2xs uppercase tracking-wider">
                       <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                       Alternative Hypothesis (H₁)
                     </div>
-                    <p className="text-xs text-blue-950 font-medium leading-relaxed font-mono">
+                    <p className="text-xs text-blue-900 font-medium leading-relaxed font-mono">
                       {previewPreset.researchQuestion.hypothesisAlt || 'H₁: Statistically significant effect / association.'}
                     </p>
                   </div>
@@ -2012,12 +2012,12 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                 <div className="border border-slate-200 rounded-lg overflow-x-auto bg-white shadow-2xs max-h-60">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="bg-slate-100/80 border-b border-slate-200 text-slate-700 font-bold text-2xs uppercase tracking-wider">
-                        <th className="py-2 px-3 w-12 text-slate-400">#</th>
+                      <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-bold text-2xs uppercase tracking-wider">
+                        <th className="py-2 px-3 w-12 text-slate-500">#</th>
                         {previewPreset.dataset.columns.map((col) => (
                           <th key={col.name} className="py-2 px-3 border-l border-slate-200">
                             <div>{col.name}</div>
-                            <div className="text-[10px] font-normal text-slate-400 font-mono lowercase">
+                            <div className="text-[10px] font-normal text-slate-500 font-mono lowercase">
                               {col.type}
                             </div>
                           </th>
@@ -2026,8 +2026,8 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-mono text-2xs">
                       {previewPreset.dataset.data.slice(0, 8).map((row, rIdx) => (
-                        <tr key={rIdx} className="hover:bg-blue-50/40 transition-colors">
-                          <td className="py-1.5 px-3 text-slate-400 font-sans">{rIdx + 1}</td>
+                        <tr key={rIdx} className="hover:bg-blue-50 transition-colors">
+                          <td className="py-1.5 px-3 text-slate-500 font-sans">{rIdx + 1}</td>
                           {previewPreset.dataset.columns.map((col) => (
                             <td key={col.name} className="py-1.5 px-3 border-l border-slate-100 text-slate-800">
                               {String(row[col.name] ?? '-')}
@@ -2065,7 +2065,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                   }}
                   className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
                 >
-                  <Database className="w-4 h-4 text-blue-200" />
+                  <Database className="w-4 h-4 text-blue-800" />
                   <span>Fill & Load Complete Pre-Set Study</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>

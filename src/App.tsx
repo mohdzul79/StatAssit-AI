@@ -17,7 +17,9 @@ import { GmailModal } from './components/GmailModal';
 import { GoogleDriveModal } from './components/GoogleDriveModal';
 import { DonateModal } from './components/DonateModal';
 import { IpCopyrightModal } from './components/IpCopyrightModal';
-import { Sparkles, ShieldCheck } from 'lucide-react';
+import { LearningCentreModal } from './components/LearningCentreModal';
+import { FeedbackModal } from './components/FeedbackModal';
+import { Sparkles, ShieldCheck, BookOpen, HelpCircle } from 'lucide-react';
 
 import { UserProfile, MOHDZUL_ADMIN_PROFILE } from './types/user';
 import { saveUserDatasetToFirestore, saveAnalysisResultToFirestore } from './services/firebase';
@@ -109,6 +111,8 @@ export default function App() {
   const [isGoogleDriveOpen, setIsGoogleDriveOpen] = useState(false);
   const [isDonateOpen, setIsDonateOpen] = useState(false);
   const [isIpProtectionOpen, setIsIpProtectionOpen] = useState(false);
+  const [isLearningCentreOpen, setIsLearningCentreOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
   const [showQuickstartBanner, setShowQuickstartBanner] = useState(true);
 
   // Open Access Global Profile state (100% Free & Open Access)
@@ -651,7 +655,8 @@ export default function App() {
   const isDatasetComplete = datasetValidation.isComplete;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans relative">
+
       {/* Top Bar Navigation (Workspace Stages) */}
       {activeTab !== 'landing' && (
         <Navbar
@@ -687,20 +692,17 @@ export default function App() {
           <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* First-Time User Onboarding Banner */}
         {showQuickstartBanner && (
-          <div className="bg-white rounded-xl border border-blue-200 p-4 sm:p-5 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-sm font-bold text-slate-900">
                     First Time Using StatAssist AI?
                   </h3>
-                  <span className="text-[11px] font-mono text-blue-700 bg-blue-100/60 px-1.5 py-0.5 rounded font-bold">
+                  <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
                     Quickstart Guide
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 mt-0.5">
-                  Learn how to ingest raw datasets, verify measurement scales, run inferential hypotheses, and generate APA 7th publication tables with our 5-step checklist.
-                </p>
               </div>
             </div>
 
@@ -708,14 +710,14 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setIsUserGuideOpen(true)}
-                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-xs cursor-pointer"
+                className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-2xs cursor-pointer whitespace-nowrap"
               >
                 Step-by-Step Checklist
               </button>
               <button
                 type="button"
                 onClick={() => setShowQuickstartBanner(false)}
-                className="px-2.5 py-1.5 text-xs font-medium text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-800 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
               >
                 Dismiss
               </button>
@@ -852,10 +854,10 @@ export default function App() {
                         <Sparkles className="w-3.5 h-3.5" />
                         <span>Scholarly Narrative & Discussion</span>
                       </div>
-                      <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                      <h2 className="text-xl font-bold tracking-tight text-slate-900">
                         APA 7th Manuscript Synthesis & Theoretical Discussion
                       </h2>
-                      <p className="text-xs text-slate-500 mt-1">
+                      <p className="text-xs text-slate-500 mt-0.5">
                         Automated generation of publication-ready Results paragraphs, assumption testing audits, and theoretical discussion drafts.
                       </p>
                     </div>
@@ -875,27 +877,42 @@ export default function App() {
         </>
       )}
 
-      {/* Footer: Official PayPal Donate & Copyright Protection at Bottom of Page */}
-      <footer className={`w-full border-t py-3.5 px-4 sm:px-6 lg:px-8 mt-auto z-20 ${
-        activeTab === 'landing'
-          ? 'bg-[#080d1a]/95 border-slate-800 text-slate-400'
-          : 'bg-white/95 border-slate-200/80 text-slate-600 backdrop-blur-xs'
-      }`}>
+      {/* Footer: Copyright, Learning Centre & Contact at Bottom of Pages */}
+      <footer className="relative z-20 w-full border-t border-slate-200 bg-white text-slate-500 py-3.5 px-4 sm:px-6 lg:px-8 mt-auto">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           {/* Copyright & Intellectual Property */}
-          <div className="flex flex-wrap items-center gap-2 text-center sm:text-left">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 text-center sm:text-left">
             <button
               type="button"
               onClick={() => setIsIpProtectionOpen(true)}
-              className={`inline-flex items-center gap-1.5 font-bold transition-colors px-2.5 py-1 rounded-md border text-xs cursor-pointer shadow-2xs group ${
-                activeTab === 'landing'
-                  ? 'text-slate-300 bg-slate-900 hover:bg-slate-800 border-slate-700'
-                  : 'text-slate-700 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 border-slate-300'
-              }`}
+              className="inline-flex items-center gap-1.5 font-mono font-semibold transition-all px-3 py-1 rounded-full border text-xs cursor-pointer text-slate-600 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border-slate-200 hover:border-blue-300 group"
               title="StatAssist AI Copyright 2026 — View Intellectual Property, Copyright & Trade Secret Protections"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-blue-500 shrink-0 group-hover:scale-110 transition-transform" />
+              <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0 group-hover:scale-110 transition-transform" />
               <span>StatAssist AI Copyright 2026</span>
+            </button>
+          </div>
+
+          {/* Learning Centre & Contact */}
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5">
+            <button
+              type="button"
+              onClick={() => setIsLearningCentreOpen(true)}
+              className="inline-flex items-center gap-1.5 font-medium transition-all px-3 py-1 rounded-full border text-xs cursor-pointer text-slate-700 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border-slate-200 hover:border-blue-300 group"
+              title="Statistical tutorials"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-slate-500 group-hover:text-blue-600 shrink-0 transition-colors" />
+              <span>Learning Centre</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsContactOpen(true)}
+              className="inline-flex items-center gap-1.5 font-medium transition-all px-3 py-1 rounded-full border text-xs cursor-pointer text-slate-700 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border-slate-200 hover:border-blue-300 group"
+              title="Support and enquiries"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-slate-500 group-hover:text-blue-600 shrink-0 transition-colors" />
+              <span>Contact</span>
             </button>
           </div>
 
@@ -994,6 +1011,32 @@ export default function App() {
         isOpen={isIpProtectionOpen}
         onClose={() => setIsIpProtectionOpen(false)}
         authorEmail={currentUser?.email || 'mohdzul@gmail.com'}
+      />
+
+      {/* Learning Centre — Statistical Tutorials Modal */}
+      <LearningCentreModal
+        isOpen={isLearningCentreOpen}
+        onClose={() => setIsLearningCentreOpen(false)}
+        onLaunchTutorialTest={(testType) => {
+          applyPresetStudyForTest(testType, false);
+          setActiveTab('analysis');
+        }}
+        onOpenApaGuide={() => setIsGuideOpen(true)}
+      />
+
+      {/* Contact — Support & Enquiries Modal */}
+      <FeedbackModal
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
+        defaultEmail=""
+        defaultName=""
+        currentTest={selectedTest}
+        datasetStats={{
+          hasData: currentDataset.data.length > 0,
+          rowCount: currentDataset.totalRows,
+          colCount: currentDataset.columns.length,
+        }}
+        initialCategory="general"
       />
     </div>
   );

@@ -93,7 +93,7 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100"
+            className="p-1 text-slate-500 hover:text-slate-600 rounded-lg hover:bg-slate-100"
           >
             <X className="w-5 h-5" />
           </button>
@@ -112,7 +112,7 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span className="w-4 h-4 rounded-full bg-slate-200 text-slate-700 text-[10px] flex items-center justify-center font-bold">
+              <span className="w-4 h-4 rounded-full bg-slate-100 text-slate-700 text-[10px] flex items-center justify-center font-bold">
                 {s.step}
               </span>
               <span>{s.title.split(' ')[0]} {s.title.split(' ')[1] || ''}</span>
@@ -159,7 +159,7 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({
                 </ul>
               </div>
 
-              <div className="p-3 bg-blue-50/60 border border-blue-200 rounded-lg text-xs text-blue-900 font-medium">
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800 font-medium">
                 {s.tip}
               </div>
             </div>

@@ -212,7 +212,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <X className="w-5 h-5" />
           </button>
 
-          <div className="flex items-center gap-2.5 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-1.5">
+          <div className="flex items-center gap-2.5 text-blue-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
             <ShieldCheck className="w-4 h-4" />
             <span>Academic Researcher Authentication</span>
           </div>
@@ -234,7 +234,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
                 mode === 'signin'
                   ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-300 hover:text-white hover:bg-white/5'
+                  : 'text-slate-300 hover:text-white hover:bg-white/10'
               }`}
             >
               <LogIn className="w-3.5 h-3.5" />
@@ -249,7 +249,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
                 mode === 'signup'
                   ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-300 hover:text-white hover:bg-white/5'
+                  : 'text-slate-300 hover:text-white hover:bg-white/10'
               }`}
             >
               <UserPlus className="w-3.5 h-3.5" />
@@ -279,7 +279,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 type="button"
                 onClick={handleQuickLoginAdmin}
                 disabled={isLoading}
-                className="w-full h-11 px-4 rounded-full bg-white text-slate-800 font-semibold text-xs sm:text-sm border-2 border-blue-500/40 shadow-2xs hover:border-blue-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all flex items-center relative cursor-pointer group disabled:opacity-50"
+                className="w-full h-11 px-4 rounded-full bg-white text-slate-800 font-semibold text-xs sm:text-sm border-2 border-blue-200 shadow-2xs hover:border-blue-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all flex items-center relative cursor-pointer group disabled:opacity-50"
                 title="Sign in with Google"
               >
                 <div className="absolute left-4 flex items-center justify-center">
@@ -322,7 +322,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <div className="bg-[#ffb900] rounded-xs" />
                   </div>
                 </div>
-                <span className="w-full text-center pl-4 text-slate-800 group-hover:text-slate-950 transition-colors">
+                <span className="w-full text-center pl-4 text-slate-800 group-hover:text-slate-900 transition-colors">
                   Microsoft
                 </span>
               </button>
@@ -351,7 +351,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.38c.62-.75 1.04-1.8 1.01-2.85-.9.04-2 .6-2.65 1.35-.58.67-1.09 1.73-1.02 2.76.99.08 2.04-.51 2.66-1.26z" />
                   </svg>
                 </div>
-                <span className="w-full text-center pl-4 text-slate-800 group-hover:text-slate-950 transition-colors">
+                <span className="w-full text-center pl-4 text-slate-800 group-hover:text-slate-900 transition-colors">
                   Apple
                 </span>
               </button>
@@ -380,7 +380,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.936 9.936 0 0024 4.59z" />
                   </svg>
                 </div>
-                <span className="w-full text-center pl-4 text-slate-800 group-hover:text-slate-950 transition-colors">
+                <span className="w-full text-center pl-4 text-slate-800 group-hover:text-slate-900 transition-colors">
                   Twitter
                 </span>
               </button>
@@ -409,7 +409,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
                 </div>
-                <span className="w-full text-center pl-4 text-slate-800 group-hover:text-slate-950 transition-colors">
+                <span className="w-full text-center pl-4 text-slate-800 group-hover:text-slate-900 transition-colors">
                   Facebook
                 </span>
               </button>
@@ -451,7 +451,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                           const base = signInEmail.includes('@') ? signInEmail.split('@')[0] : signInEmail;
                           setSignInEmail(`${base || 'scholar'}${dom}`);
                         }}
-                        className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 hover:border-blue-300 transition-colors cursor-pointer"
+                        className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 hover:border-blue-200 transition-colors cursor-pointer"
                       >
                         {dom}
                       </button>

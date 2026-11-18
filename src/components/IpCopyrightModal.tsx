@@ -64,14 +64,14 @@ Intellectual Property & Trade Secrets Rights Holder: Mohd Zulhisam (${authorEmai
         <div className="px-6 py-5 border-b border-slate-200 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3.5">
             <div className="p-2.5 bg-blue-500/20 text-blue-300 border border-blue-400/30 rounded-xl shadow-xs">
-              <ShieldCheck className="w-6 h-6 text-blue-400" />
+              <ShieldCheck className="w-6 h-6 text-blue-300" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base sm:text-lg font-bold tracking-tight text-white">
                   Copyright & Intellectual Property Protection
                 </h2>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30 uppercase tracking-wide">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-400/20 text-amber-200 border border-amber-400/30 uppercase tracking-wide">
                   Trade Secrets Protected
                 </span>
               </div>
@@ -80,7 +80,7 @@ Intellectual Property & Trade Secrets Rights Holder: Mohd Zulhisam (${authorEmai
 
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-1.5 text-slate-300 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
             title="Close"
           >
             <X className="w-5 h-5" />
@@ -88,7 +88,7 @@ Intellectual Property & Trade Secrets Rights Holder: Mohd Zulhisam (${authorEmai
         </div>
 
         {/* Content Body - Single Page Layout */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50">
           {/* Official Declaration Banner */}
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
@@ -98,7 +98,7 @@ Intellectual Property & Trade Secrets Rights Holder: Mohd Zulhisam (${authorEmai
             <p className="text-xs text-slate-600 leading-relaxed">
               This notice protects the application's <strong>original Python source code</strong>, <strong>backend scripts</strong>, <strong>UI/UX frontend</strong>, and <strong>specific generative AI prompt engineering templates</strong> under Copyright.
             </p>
-            <p className="text-xs text-amber-900 font-medium bg-amber-50 p-2.5 rounded-lg border border-amber-200 leading-relaxed">
+            <p className="text-xs text-amber-800 font-medium bg-amber-50 p-2.5 rounded-lg border border-amber-200 leading-relaxed">
               <strong>Trade Secrets:</strong> Protect the precise internal decision matrices, thresholds, and algorithms driving FSM Logic Router by utilizing strict Non-Disclosure Agreements (NDAs) and keeping the core code confidential.
             </p>
             <p className="text-xs text-slate-600 leading-relaxed">
@@ -190,23 +190,23 @@ Intellectual Property & Trade Secrets Rights Holder: Mohd Zulhisam (${authorEmai
             <p className="text-xs text-slate-600 leading-relaxed">
               The specialized prompt engineering templates—including system instruction personas, strict APA 7th editorial guidelines (symbol italicization, leading zero omission on bounded statistics, bracketed CI notation), theoretical discussion structuring heuristics, and JSON response schema definitions—are proprietary trade secrets authored by Mohd Zulhisam.
             </p>
-            <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-lg text-2xs text-amber-900 space-y-1">
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-2xs text-amber-800 space-y-1">
               <strong>Trade Secret Notice:</strong> Prompt templates are proprietary and shall not be extracted, copied, or utilized to train external LLM agents or clone the StatAssist AI synthesis system.
             </div>
           </div>
 
           {/* 5. Trade Secrets: FSM Logic Router & Decision Matrices */}
-          <div className="bg-gradient-to-br from-amber-50/60 via-white to-orange-50/30 p-5 rounded-2xl border-2 border-amber-300 shadow-2xs space-y-3">
+          <div className="bg-gradient-to-br from-amber-50/60 via-[#0B1120] to-orange-50/30 p-5 rounded-2xl border-2 border-amber-200 shadow-2xs space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
                 <Lock className="w-4 h-4 text-amber-600" />
                 <span>5. Trade Secrets: FSM Logic Router & Internal Decision Matrices</span>
               </div>
-              <span className="text-[10px] font-mono font-bold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded border border-amber-300">
+              <span className="text-[10px] font-mono font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded border border-amber-200">
                 Strict NDAs & Core Code Confidentiality
               </span>
             </div>
-            <div className="bg-amber-100/70 border border-amber-300/80 p-3 rounded-xl text-xs font-semibold text-amber-950">
+            <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl text-xs font-semibold text-amber-900">
               Trade Secrets: Protect the precise internal decision matrices, thresholds, and algorithms driving FSM Logic Router by utilizing strict Non-Disclosure Agreements (NDAs) and keeping the core code confidential.
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
@@ -226,8 +226,8 @@ Intellectual Property & Trade Secrets Rights Holder: Mohd Zulhisam (${authorEmai
           </div>
 
           {/* 6. Permitted Academic Fair Use */}
-          <div className="bg-emerald-50/60 p-5 rounded-2xl border border-emerald-200 text-xs space-y-2">
-            <div className="flex items-center gap-2 font-bold text-emerald-900">
+          <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-200 text-xs space-y-2">
+            <div className="flex items-center gap-2 font-bold text-emerald-800">
               <Check className="w-4 h-4 text-emerald-600" />
               <span>Permitted Scholar & Academic Fair Use</span>
             </div>

@@ -211,7 +211,7 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
         {/* Simplified Header */}
         <div className="px-6 py-4 border-b border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-100">
+            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-200">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
@@ -233,7 +233,7 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
             )}
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 text-slate-500 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
               title="Close CMS"
             >
               <X className="w-5 h-5" />
@@ -242,18 +242,18 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
         </div>
 
         {/* Simplified Tab Navigation */}
-        <div className="flex items-center border-b border-slate-200 bg-slate-50/70 px-6 gap-2 shrink-0">
+        <div className="flex items-center border-b border-slate-200 bg-slate-50 px-6 gap-2 shrink-0">
           <button
             onClick={() => setActiveTab('members')}
             className={`py-3 px-3.5 text-xs font-bold border-b-2 flex items-center gap-2 cursor-pointer transition-all ${
               activeTab === 'members'
                 ? 'border-indigo-600 text-indigo-700 bg-white shadow-2xs'
-                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Users className="w-4 h-4 text-indigo-600" />
             <span>Scholar Directory</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-700 font-semibold">
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-700 font-semibold">
               {members.length}
             </span>
           </button>
@@ -263,19 +263,19 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
             className={`py-3 px-3.5 text-xs font-bold border-b-2 flex items-center gap-2 cursor-pointer transition-all ${
               activeTab === 'feedback'
                 ? 'border-indigo-600 text-indigo-700 bg-white shadow-2xs'
-                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <MessageSquare className="w-4 h-4 text-purple-600" />
             <span>Inquiries & Feedback</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-700 font-semibold">
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-700 font-semibold">
               {tickets.length}
             </span>
           </button>
         </div>
 
         {/* Tab Body */}
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
+        <div className="flex-1 overflow-y-auto p-6 bg-slate-50">
           {/* TAB 1: SCHOLAR DIRECTORY */}
           {activeTab === 'members' && (
             <div className="space-y-4">
@@ -283,7 +283,7 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
                 <div className="flex items-center gap-2 flex-1 max-w-md">
                   <div className="relative w-full">
-                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
                       placeholder="Search scholars by name, email, institution..."
@@ -327,7 +327,7 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {filteredMembers.map((m) => (
-                      <tr key={m.id} className="hover:bg-slate-50/70 transition-colors">
+                      <tr key={m.id} className="hover:bg-slate-50 transition-colors">
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-2.5">
                             <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0">
@@ -335,13 +335,13 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
                             </div>
                             <div>
                               <div className="font-bold text-slate-900">{m.name}</div>
-                              <div className="text-slate-400 text-2xs">{m.email}</div>
+                              <div className="text-slate-500 text-2xs">{m.email}</div>
                             </div>
                           </div>
                         </td>
                         <td className="py-3 px-4 text-slate-600">
                           <div>{m.institution}</div>
-                          {m.department && <div className="text-slate-400 text-2xs">{m.department}</div>}
+                          {m.department && <div className="text-slate-500 text-2xs">{m.department}</div>}
                         </td>
                         <td className="py-3 px-4">
                           <span
@@ -349,7 +349,7 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
                               m.role === 'admin'
                                 ? 'bg-purple-100 text-purple-800 border border-purple-200'
                                 : m.role === 'researcher'
-                                ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                                ? 'bg-blue-50 text-blue-800 border border-blue-200'
                                 : 'bg-slate-100 text-slate-700 border border-slate-200'
                             }`}
                           >
@@ -387,8 +387,8 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
                               onClick={() => handleToggleMemberStatus(m.id)}
                               className={`p-1 rounded cursor-pointer ${
                                 m.status === 'Active'
-                                  ? 'text-slate-400 hover:text-amber-600 hover:bg-amber-50'
-                                  : 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50'
+                                  ? 'text-slate-500 hover:text-amber-600 hover:bg-amber-50'
+                                  : 'text-slate-500 hover:text-emerald-600 hover:bg-emerald-50'
                               }`}
                               title={m.status === 'Active' ? 'Suspend scholar' : 'Activate scholar'}
                             >
@@ -398,7 +398,7 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
                               <button
                                 type="button"
                                 onClick={() => setMemberToDelete(m)}
-                                className="p-1 text-slate-400 hover:text-rose-600 rounded hover:bg-rose-50 cursor-pointer"
+                                className="p-1 text-slate-500 hover:text-rose-600 rounded hover:bg-rose-50 cursor-pointer"
                                 title="Delete scholar record"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -410,7 +410,7 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
                     ))}
                     {filteredMembers.length === 0 && (
                       <tr>
-                        <td colSpan={5} className="py-8 text-center text-slate-400 text-xs">
+                        <td colSpan={5} className="py-8 text-center text-slate-500 text-xs">
                           No scholars found matching your search.
                         </td>
                       </tr>
@@ -463,7 +463,7 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
                       onClick={() => setSelectedTicket(t)}
                       className={`p-3 rounded-xl border transition-all cursor-pointer text-left ${
                         selectedTicket?.ticketId === t.ticketId
-                          ? 'border-indigo-500 bg-indigo-50/40 ring-1 ring-indigo-500/20'
+                          ? 'border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500/20'
                           : 'border-slate-200 bg-white hover:border-slate-300'
                       }`}
                     >
@@ -488,7 +488,7 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
                     </div>
                   ))}
                   {filteredTickets.length === 0 && (
-                    <div className="py-8 text-center text-slate-400 text-xs">No inquiries found.</div>
+                    <div className="py-8 text-center text-slate-500 text-xs">No inquiries found.</div>
                   )}
                 </div>
               </div>
@@ -529,8 +529,8 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
                     </div>
 
                     {selectedTicket.adminNotes && (
-                      <div className="p-3 bg-indigo-50/60 rounded-lg border border-indigo-100 text-xs space-y-1">
-                        <span className="font-bold text-indigo-900 text-2xs uppercase">Admin Resolution Note:</span>
+                      <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-200 text-xs space-y-1">
+                        <span className="font-bold text-indigo-800 text-2xs uppercase">Admin Resolution Note:</span>
                         <p className="text-slate-700">{selectedTicket.adminNotes}</p>
                       </div>
                     )}
@@ -556,7 +556,7 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
                     </div>
                   </>
                 ) : (
-                  <div className="py-12 text-center text-slate-400 text-xs">
+                  <div className="py-12 text-center text-slate-500 text-xs">
                     Select an inquiry from the list to view details and respond.
                   </div>
                 )}
@@ -568,7 +568,7 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
         {/* Simplified Footer */}
         <div className="px-6 py-2.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-2xs text-slate-500 shrink-0">
           <span>Admin Console • StatAssist AI</span>
-          <span className="text-slate-400">{members.length} Registered Scholars</span>
+          <span className="text-slate-500">{members.length} Registered Scholars</span>
         </div>
       </div>
 
@@ -587,7 +587,7 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
               <button
                 type="button"
                 onClick={() => setIsAddMemberOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-500 hover:text-slate-600 p-1"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -684,7 +684,7 @@ export const AdminCmsModal: React.FC<AdminCmsModalProps> = ({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-2.5 text-rose-600 font-bold text-sm">
-              <div className="p-2 rounded-lg bg-rose-50 border border-rose-100">
+              <div className="p-2 rounded-lg bg-rose-50 border border-rose-200">
                 <Trash2 className="w-4 h-4" />
               </div>
               <span>Delete Scholar Record</span>

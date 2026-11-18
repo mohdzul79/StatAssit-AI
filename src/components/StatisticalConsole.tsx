@@ -139,10 +139,10 @@ export const StatisticalConsole: React.FC<StatisticalConsoleProps> = ({
       </div>
 
       {/* Research Question & Hypothesis Section */}
-      <div className="bg-slate-50/80 border border-slate-200 rounded-xl p-4 sm:p-5 space-y-3">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 bg-blue-100 text-blue-700 rounded-lg">
+            <span className="p-1.5 bg-blue-50 text-blue-700 rounded-lg">
               <HelpCircle className="w-4 h-4" />
             </span>
             <div>
@@ -188,7 +188,7 @@ export const StatisticalConsole: React.FC<StatisticalConsoleProps> = ({
               <button
                 type="button"
                 onClick={onAutoDraftRq}
-                className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors flex items-center gap-1 shadow-xs cursor-pointer"
+                className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-50 border border-blue-200 rounded-lg transition-colors flex items-center gap-1 shadow-xs cursor-pointer"
                 title="Auto-draft research question from currently assigned variables"
               >
                 <Sparkles className="w-3.5 h-3.5 text-blue-600" />
@@ -211,7 +211,7 @@ export const StatisticalConsole: React.FC<StatisticalConsoleProps> = ({
 
         {/* Active RQ Details */}
         {activeResearchQuestion ? (
-          <div className="bg-white border border-slate-200/90 rounded-lg p-3.5 space-y-2.5">
+          <div className="bg-white border border-slate-200 rounded-lg p-3.5 space-y-2.5">
             <div>
               <span className="text-[11px] font-mono text-blue-700 font-bold uppercase tracking-wider block mb-0.5">
                 {activeResearchQuestion.title}
@@ -232,7 +232,7 @@ export const StatisticalConsole: React.FC<StatisticalConsoleProps> = ({
                   </div>
                 )}
                 {activeResearchQuestion.hypothesisAlt && (
-                  <div className="p-2 rounded bg-blue-50/60 border border-blue-200">
+                  <div className="p-2 rounded bg-blue-50 border border-blue-200">
                     <span className="font-bold text-blue-800 block font-sans text-[11px] mb-0.5">
                       Alternative Hypothesis (H₁):
                     </span>
@@ -301,7 +301,7 @@ export const StatisticalConsole: React.FC<StatisticalConsoleProps> = ({
                 placeholder="e.g. 0 or 75.0"
                 className="w-full text-xs border border-slate-200 rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
               />
-              <span className="text-[10px] text-slate-400 mt-1 block">
+              <span className="text-[10px] text-slate-500 mt-1 block">
                 Standard population benchmark or baseline criterion
               </span>
             </div>
@@ -1046,7 +1046,7 @@ export const StatisticalConsole: React.FC<StatisticalConsoleProps> = ({
                 </option>
               ))}
             </select>
-            <span className="text-[10px] text-slate-400 mt-1 block">
+            <span className="text-[10px] text-slate-500 mt-1 block">
               Tests whether counts across {selectedIV || 'categories'} differ from an equal distribution.
             </span>
           </div>

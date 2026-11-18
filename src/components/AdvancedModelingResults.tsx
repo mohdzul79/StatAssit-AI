@@ -85,7 +85,7 @@ const EfaPanel: React.FC<{ result: EfaResult }> = ({ result }) => {
       {/* Diagnostic Sampling Adequacy Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* KMO Card */}
-        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between">
+        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-500">
@@ -104,13 +104,13 @@ const EfaPanel: React.FC<{ result: EfaResult }> = ({ result }) => {
               <span className="text-xs text-slate-500">Sampling Adequacy (Target ≥ .60)</span>
             </div>
           </div>
-          <p className="text-xs text-slate-600 mt-3 pt-2 border-t border-slate-200/60 leading-relaxed">
+          <p className="text-xs text-slate-600 mt-3 pt-2 border-t border-slate-200 leading-relaxed">
             Kaiser (1974) classification indicates the sample correlation matrix possesses suitable shared variance for factor extraction.
           </p>
         </div>
 
         {/* Bartlett's Test Card */}
-        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between">
+        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-500">
@@ -131,7 +131,7 @@ const EfaPanel: React.FC<{ result: EfaResult }> = ({ result }) => {
               </span>
             </div>
           </div>
-          <p className="text-xs text-slate-600 mt-3 pt-2 border-t border-slate-200/60 leading-relaxed">
+          <p className="text-xs text-slate-600 mt-3 pt-2 border-t border-slate-200 leading-relaxed">
             Rejects the null hypothesis that correlation matrix is an identity matrix. Sufficient inter-item collinearity exists for factor extraction.
           </p>
         </div>
@@ -158,7 +158,7 @@ const EfaPanel: React.FC<{ result: EfaResult }> = ({ result }) => {
               {eigenvalues.map((ev, i: number) => {
                 const isRetained = ev.eigenvalue >= 1.0;
                 return (
-                  <tr key={i} className={`hover:bg-slate-50/60 ${isRetained ? 'bg-indigo-50/20' : ''}`}>
+                  <tr key={i} className={`hover:bg-slate-50 ${isRetained ? 'bg-indigo-50' : ''}`}>
                     <td className="py-2 px-3 font-semibold text-slate-900">Factor {ev.factor}</td>
                     <td className="py-2 px-3 text-slate-800">{ev.eigenvalue.toFixed(3)}</td>
                     <td className="py-2 px-3 text-slate-800">{ev.varianceExplainedPct.toFixed(1)}%</td>
@@ -206,7 +206,7 @@ const EfaPanel: React.FC<{ result: EfaResult }> = ({ result }) => {
             <tbody className="divide-y divide-slate-100 font-mono">
               {factorLoadings.map((fl, rowIdx: number) => {
                 return (
-                  <tr key={rowIdx} className="hover:bg-slate-50/60">
+                  <tr key={rowIdx} className="hover:bg-slate-50">
                     <td className="py-2 px-3 font-semibold text-slate-900 font-sans">{fl.variable}</td>
                     {fl.loadings.map((load: number, fIdx: number) => {
                       const isHigh = Math.abs(load) >= 0.40;
@@ -215,7 +215,7 @@ const EfaPanel: React.FC<{ result: EfaResult }> = ({ result }) => {
                           key={fIdx}
                           className={`py-2 px-3 ${
                             isHigh
-                              ? 'font-bold text-indigo-700 bg-indigo-50/50'
+                              ? 'font-bold text-indigo-700 bg-indigo-50'
                               : 'text-slate-600'
                           }`}
                         >
@@ -298,15 +298,15 @@ const CfaPanel: React.FC<{ result: CfaResult }> = ({ result }) => {
               {(reliability || []).map((rel, idx: number) => {
                 const isValid = rel.compositeReliability >= 0.70 && rel.ave >= 0.50;
                 return (
-                  <tr key={idx} className="hover:bg-slate-50/60">
+                  <tr key={idx} className="hover:bg-slate-50">
                     <td className="py-2 px-3 font-semibold text-slate-900 font-sans">{rel.factor}</td>
                     <td className="py-2 px-3 font-semibold text-slate-900">
                       {rel.compositeReliability.toFixed(3)}
-                      <span className="text-[10px] text-slate-400 font-normal ml-1">(Target &gt; .70)</span>
+                      <span className="text-[10px] text-slate-500 font-normal ml-1">(Target &gt; .70)</span>
                     </td>
                     <td className="py-2 px-3 font-semibold text-slate-900">
                       {rel.ave.toFixed(3)}
-                      <span className="text-[10px] text-slate-400 font-normal ml-1">(Target &gt; .50)</span>
+                      <span className="text-[10px] text-slate-500 font-normal ml-1">(Target &gt; .50)</span>
                     </td>
                     <td className="py-2 px-3 text-slate-800">{rel.cronbachAlpha.toFixed(3)}</td>
                     <td className="py-2 px-3">
@@ -348,7 +348,7 @@ const CfaPanel: React.FC<{ result: CfaResult }> = ({ result }) => {
             </thead>
             <tbody className="divide-y divide-slate-100 font-mono">
               {factorLoadings.map((ind, idx: number) => (
-                <tr key={idx} className="hover:bg-slate-50/60">
+                <tr key={idx} className="hover:bg-slate-50">
                   <td className="py-2 px-3 font-semibold text-slate-900 font-sans">{ind.latentFactor}</td>
                   <td className="py-2 px-3 text-slate-800 font-sans">{ind.indicator}</td>
                   <td className="py-2 px-3 text-slate-800">{ind.unstandardized.toFixed(3)}</td>
@@ -434,7 +434,7 @@ const SemPanel: React.FC<{ result: SemResult }> = ({ result }) => {
               {structuralPaths.map((p, idx: number) => {
                 const isSig = p.pValue < 0.05;
                 return (
-                  <tr key={idx} className="hover:bg-slate-50/60">
+                  <tr key={idx} className="hover:bg-slate-50">
                     <td className="py-2 px-3 font-semibold text-slate-900 font-sans">
                       {p.source} → {p.target}
                     </td>
@@ -461,7 +461,7 @@ const SemPanel: React.FC<{ result: SemResult }> = ({ result }) => {
                           </>
                         ) : (
                           <>
-                            <AlertCircle className="w-3 h-3 text-slate-400" />
+                            <AlertCircle className="w-3 h-3 text-slate-500" />
                             Not Supported
                           </>
                         )}
@@ -499,7 +499,7 @@ const SemPanel: React.FC<{ result: SemResult }> = ({ result }) => {
                 {mediationEffects.map((m, idx: number) => {
                   const isSigMed = m.sobelP < 0.05;
                   return (
-                    <tr key={idx} className="hover:bg-slate-50/60">
+                    <tr key={idx} className="hover:bg-slate-50">
                       <td className="py-2 px-3 font-semibold text-slate-900 font-sans">
                         {m.independent} → {m.mediator} → {m.dependent}
                       </td>
@@ -523,7 +523,7 @@ const SemPanel: React.FC<{ result: SemResult }> = ({ result }) => {
                             </>
                           ) : (
                             <>
-                              <AlertCircle className="w-3 h-3 text-slate-400" />
+                              <AlertCircle className="w-3 h-3 text-slate-500" />
                               No Mediation
                             </>
                           )}
@@ -568,7 +568,7 @@ const ModelFitIndicesDashboard: React.FC<{ fit: ModelFitIndices }> = ({ fit }) =
           return (
             <div
               key={i}
-              className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex flex-col justify-between"
+              className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between">
@@ -580,7 +580,7 @@ const ModelFitIndicesDashboard: React.FC<{ fit: ModelFitIndices }> = ({ fit }) =
                       isGood
                         ? 'bg-emerald-100 text-emerald-800'
                         : isAcceptable
-                        ? 'bg-blue-100 text-blue-800'
+                        ? 'bg-blue-50 text-blue-800'
                         : 'bg-amber-100 text-amber-800'
                     }`}
                   >
@@ -593,7 +593,7 @@ const ModelFitIndicesDashboard: React.FC<{ fit: ModelFitIndices }> = ({ fit }) =
                     : idxItem.value}
                 </div>
               </div>
-              <div className="mt-2 pt-1.5 border-t border-slate-200/60 text-[10px] text-slate-500 font-mono">
+              <div className="mt-2 pt-1.5 border-t border-slate-200 text-[10px] text-slate-500 font-mono">
                 Target: {idxItem.benchmark}
               </div>
             </div>
@@ -601,7 +601,7 @@ const ModelFitIndicesDashboard: React.FC<{ fit: ModelFitIndices }> = ({ fit }) =
         })}
       </div>
 
-      <div className="mt-2.5 p-2.5 bg-blue-50/50 border border-blue-200/60 rounded-lg flex items-start gap-2 text-xs text-blue-900">
+      <div className="mt-2.5 p-2.5 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-2 text-xs text-blue-800">
         <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
         <span className="leading-relaxed">
           Hu &amp; Bentler (1999) 2-index recommendation: Report <strong>SRMR</strong> alongside either <strong>CFI</strong> (≥ .95) or <strong>RMSEA</strong> (≤ .06) for robust control against Type I and Type II misspecification errors.

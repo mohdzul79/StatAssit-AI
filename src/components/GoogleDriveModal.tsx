@@ -355,7 +355,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
         {/* Header Bar */}
         <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl border border-blue-100 shadow-2xs">
+            <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl border border-blue-200 shadow-2xs">
               <HardDrive className="w-5 h-5 text-blue-600" />
             </div>
             <div>
@@ -374,7 +374,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
@@ -429,7 +429,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
               </svg>
               <span>{isAuthenticating ? 'Connecting Drive...' : 'Sign in with Google'}</span>
             </button>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-slate-500">
               Ephemeral in-memory authorization. Security token is kept strictly in RAM.
             </p>
           </div>
@@ -438,7 +438,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
             {/* User Session Bar & Tabs */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200 shrink-0">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">
+                <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center font-bold text-xs">
                   {googleUser.displayName ? googleUser.displayName.charAt(0) : 'D'}
                 </div>
                 <div>
@@ -499,7 +499,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition-colors"
+                  className="p-1.5 text-slate-500 hover:text-slate-700 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition-colors"
                   title="Disconnect Google session"
                 >
                   <LogOut className="w-4 h-4" />
@@ -526,7 +526,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
               <div className="space-y-3 overflow-y-auto flex-1 pr-1">
                 <div className="flex items-center justify-between gap-3">
                   <div className="relative flex-1">
-                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
                       value={searchQuery}
@@ -560,7 +560,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                   </div>
                 ) : files.length === 0 ? (
                   <div className="p-8 text-center border border-dashed border-slate-200 rounded-xl space-y-2">
-                    <HardDrive className="w-8 h-8 text-slate-300 mx-auto" />
+                    <HardDrive className="w-8 h-8 text-slate-600 mx-auto" />
                     <p className="text-xs text-slate-600 font-medium">No files found matching query in Google Drive.</p>
                   </div>
                 ) : (
@@ -573,7 +573,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                       return (
                         <div
                           key={file.id}
-                          className="p-3 hover:bg-slate-50/80 transition-colors flex items-center justify-between gap-3"
+                          className="p-3 hover:bg-slate-50 transition-colors flex items-center justify-between gap-3"
                         >
                           <div className="flex items-center gap-3 min-w-0 flex-1">
                             <div className="p-2 rounded-lg bg-slate-100 shrink-0">
@@ -591,7 +591,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                               <p className="text-xs font-semibold text-slate-900 truncate">
                                 {file.name}
                               </p>
-                              <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono mt-0.5">
+                              <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono mt-0.5">
                                 <span>{file.modifiedTime ? new Date(file.modifiedTime).toLocaleDateString() : ''}</span>
                                 {file.size && <span>• {(Number(file.size) / 1024).toFixed(1)} KB</span>}
                               </div>
@@ -616,7 +616,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                                 href={file.webViewLink}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                 title="Open in Google Drive"
                               >
                                 <ExternalLink className="w-3.5 h-3.5" />
@@ -626,7 +626,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                             <button
                               type="button"
                               onClick={() => initiateDeleteFile(file)}
-                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                               title="Delete file from Google Drive"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -671,7 +671,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                   />
                 </div>
 
-                <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-start gap-2">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-800 flex items-start gap-2">
                   <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                   <p>
                     Dataset records will be structured as standard RFC 4180 comma-separated values (CSV) and saved directly in your Google Drive root or designated project folder.
@@ -758,7 +758,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                   className={`p-2.5 rounded-xl ${
                     confirmDialog.isDestructive
                       ? 'bg-rose-100 text-rose-700'
-                      : 'bg-blue-100 text-blue-700'
+                      : 'bg-blue-50 text-blue-700'
                   }`}
                 >
                   {confirmDialog.isDestructive ? (

@@ -255,6 +255,77 @@ app.get('/api/token-check', (_req, res) => {
   });
 });
 
+// Direct Contact Message Routing (Receiver locked to mohdzul@gmail.com)
+const CONTACT_RECEIVER = 'mohdzul@gmail.com';
+const contactInbox: {
+  ticketId: string;
+  receiver: string;
+  senderName: string;
+  senderEmail: string;
+  subject: string;
+  details: string;
+  attachments: { name: string; size: number; type: string }[];
+  submittedAt: string;
+}[] = [];
+
+app.post('/api/contact', (req, res) => {
+  try {
+    const { subject, details, senderEmail, senderName, attachments } = req.body || {};
+
+    const cleanSubject = typeof subject === 'string' ? subject.trim() : '';
+    const cleanDetails = typeof details === 'string' ? details.trim() : '';
+    const cleanEmail = typeof senderEmail === 'string' ? senderEmail.trim() : '';
+    const cleanName = typeof senderName === 'string' ? senderName.trim() : '';
+
+    if (!cleanSubject || !cleanDetails || !cleanEmail || !cleanName) {
+      return res.status(400).json({
+        error: 'All compulsory details (Subject, Details, Email, and Name) are required before submission.',
+      });
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      return res.status(400).json({ error: 'Please provide a valid email address.' });
+    }
+
+    const ticketId = `STA-${Math.floor(1000 + Math.random() * 9000)}`;
+    const record = {
+      ticketId,
+      receiver: CONTACT_RECEIVER,
+      senderName: cleanName,
+      senderEmail: cleanEmail,
+      subject: cleanSubject,
+      details: cleanDetails,
+      attachments: Array.isArray(attachments) ? attachments : [],
+      submittedAt: new Date().toISOString(),
+    };
+
+    contactInbox.unshift(record);
+    if (contactInbox.length > 100) {
+      contactInbox.pop();
+    }
+
+    return res.json({
+      success: true,
+      ticketId,
+      receiver: CONTACT_RECEIVER,
+      submittedAt: record.submittedAt,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      error: 'Failed to deliver contact submission',
+      details: err?.message || 'Unexpected contact routing error',
+    });
+  }
+});
+
+app.get('/api/contact/inbox', (_req, res) => {
+  return res.json({
+    receiver: CONTACT_RECEIVER,
+    count: contactInbox.length,
+    messages: contactInbox,
+  });
+});
+
 app.get('/api/tokens/available', (_req, res) => {
   const hasKey = Boolean(process.env.GEMINI_API_KEY);
   return res.json({

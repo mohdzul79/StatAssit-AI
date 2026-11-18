@@ -201,7 +201,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
 
   return (
     <div
-      className={`w-full max-w-[290px] rounded-2xl bg-[#f2f4f2] text-slate-800 p-4 shadow-xl border border-slate-300/80 transition-all duration-200 ${className}`}
+      className={`w-full max-w-[290px] rounded-2xl bg-[#f2f4f2] text-slate-800 p-4 shadow-xl border border-slate-300 transition-all duration-200 ${className}`}
     >
 
       {notification && (
@@ -220,7 +220,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                 type="button"
                 onClick={handleGoogleClick}
                 disabled={isLoading}
-                className="w-full h-8 px-3 rounded-full bg-white text-slate-800 font-semibold text-xs border border-blue-500/30 shadow-2xs hover:border-blue-500 hover:shadow-xs active:scale-[0.99] transition-all flex items-center relative cursor-pointer group disabled:opacity-50"
+                className="w-full h-8 px-3 rounded-full bg-white text-slate-800 font-semibold text-xs border border-blue-200 shadow-2xs hover:border-blue-500 hover:shadow-xs active:scale-[0.99] transition-all flex items-center relative cursor-pointer group disabled:opacity-50"
                 title="Sign in with Google"
               >
                 <div className="absolute left-3 flex items-center justify-center">
@@ -257,7 +257,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                 type="button"
                 onClick={handleMicrosoftClick}
                 disabled={isLoading}
-                className="w-full h-8 px-3 rounded-full bg-white text-slate-800 font-semibold text-xs border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-xs active:scale-[0.99] transition-all flex items-center relative cursor-pointer group disabled:opacity-50"
+                className="w-full h-8 px-3 rounded-full bg-white text-slate-800 font-semibold text-xs border border-slate-200 shadow-2xs hover:border-slate-300 hover:shadow-xs active:scale-[0.99] transition-all flex items-center relative cursor-pointer group disabled:opacity-50"
               >
                 <div className="absolute left-3 flex items-center justify-center">
                   {isLoading && loadingProvider === 'microsoft' ? (
@@ -271,7 +271,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                     </div>
                   )}
                 </div>
-                <span className="w-full text-center pl-3 text-slate-800 group-hover:text-slate-950 transition-colors">
+                <span className="w-full text-center pl-3 text-slate-800 group-hover:text-slate-900 transition-colors">
                   Microsoft
                 </span>
               </button>
@@ -281,18 +281,18 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                 type="button"
                 onClick={handleAppleClick}
                 disabled={isLoading}
-                className="w-full h-8 px-3 rounded-full bg-white text-slate-800 font-semibold text-xs border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-xs active:scale-[0.99] transition-all flex items-center relative cursor-pointer group disabled:opacity-50"
+                className="w-full h-8 px-3 rounded-full bg-white text-slate-800 font-semibold text-xs border border-slate-200 shadow-2xs hover:border-slate-300 hover:shadow-xs active:scale-[0.99] transition-all flex items-center relative cursor-pointer group disabled:opacity-50"
               >
                 <div className="absolute left-3 flex items-center justify-center">
                   {isLoading && loadingProvider === 'apple' ? (
-                    <div className="w-3.5 h-3.5 border-2 border-slate-800 border-t-transparent rounded-full animate-spin" />
+                    <div className="w-3.5 h-3.5 border-2 border-slate-200 border-t-transparent rounded-full animate-spin" />
                   ) : (
                     <svg className="w-3.5 h-3.5 fill-black" viewBox="0 0 24 24">
                       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.38c.62-.75 1.04-1.8 1.01-2.85-.9.04-2 .6-2.65 1.35-.58.67-1.09 1.73-1.02 2.76.99.08 2.04-.51 2.66-1.26z" />
                     </svg>
                   )}
                 </div>
-                <span className="w-full text-center pl-3 text-slate-800 group-hover:text-slate-950 transition-colors">
+                <span className="w-full text-center pl-3 text-slate-800 group-hover:text-slate-900 transition-colors">
                   Apple
                 </span>
               </button>
@@ -302,7 +302,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                 type="button"
                 onClick={handleTwitterClick}
                 disabled={isLoading}
-                className="w-full h-8 px-3 rounded-full bg-white text-slate-800 font-semibold text-xs border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-xs active:scale-[0.99] transition-all flex items-center relative cursor-pointer group disabled:opacity-50"
+                className="w-full h-8 px-3 rounded-full bg-white text-slate-800 font-semibold text-xs border border-slate-200 shadow-2xs hover:border-slate-300 hover:shadow-xs active:scale-[0.99] transition-all flex items-center relative cursor-pointer group disabled:opacity-50"
               >
                 <div className="absolute left-3 flex items-center justify-center">
                   {isLoading && loadingProvider === 'twitter' ? (
@@ -313,7 +313,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                     </svg>
                   )}
                 </div>
-                <span className="w-full text-center pl-3 text-slate-800 group-hover:text-slate-950 transition-colors">
+                <span className="w-full text-center pl-3 text-slate-800 group-hover:text-slate-900 transition-colors">
                   Twitter
                 </span>
               </button>
@@ -323,7 +323,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                 type="button"
                 onClick={handleFacebookClick}
                 disabled={isLoading}
-                className="w-full h-8 px-3 rounded-full bg-white text-slate-800 font-semibold text-xs border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-xs active:scale-[0.99] transition-all flex items-center relative cursor-pointer group disabled:opacity-50"
+                className="w-full h-8 px-3 rounded-full bg-white text-slate-800 font-semibold text-xs border border-slate-200 shadow-2xs hover:border-slate-300 hover:shadow-xs active:scale-[0.99] transition-all flex items-center relative cursor-pointer group disabled:opacity-50"
               >
                 <div className="absolute left-3 flex items-center justify-center">
                   {isLoading && loadingProvider === 'facebook' ? (
@@ -334,26 +334,26 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                     </svg>
                   )}
                 </div>
-                <span className="w-full text-center pl-3 text-slate-800 group-hover:text-slate-950 transition-colors">
+                <span className="w-full text-center pl-3 text-slate-800 group-hover:text-slate-900 transition-colors">
                   Facebook
                 </span>
               </button>
 
               {/* Divider */}
               <div className="pt-1 pb-0.5">
-                <div className="border-t border-slate-300/80" />
+                <div className="border-t border-slate-300" />
               </div>
 
               {/* Sign in with Email Option */}
               <button
                 type="button"
                 onClick={() => setShowEmailForm(true)}
-                className="w-full h-8 px-3 rounded-full bg-white text-slate-800 font-semibold text-xs border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-xs active:scale-[0.99] transition-all flex items-center relative cursor-pointer group"
+                className="w-full h-8 px-3 rounded-full bg-white text-slate-800 font-semibold text-xs border border-slate-200 shadow-2xs hover:border-slate-300 hover:shadow-xs active:scale-[0.99] transition-all flex items-center relative cursor-pointer group"
               >
-                <div className="absolute left-3 flex items-center justify-center text-slate-700 group-hover:text-slate-950">
+                <div className="absolute left-3 flex items-center justify-center text-slate-700 group-hover:text-slate-900">
                   <Mail className="w-3.5 h-3.5 text-slate-600" />
                 </div>
-                <span className="w-full text-center pl-3 text-slate-800 group-hover:text-slate-950 transition-colors">
+                <span className="w-full text-center pl-3 text-slate-800 group-hover:text-slate-900 transition-colors">
                   Sign in with Email
                 </span>
               </button>
@@ -376,7 +376,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                     Academic or Institutional Email
                   </label>
                   <div className="relative">
-                    <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                    <Mail className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
                     <input
                       type="email"
                       value={emailInput}
@@ -405,10 +405,10 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
 
                 <div>
                   <label className="block text-2xs font-bold text-slate-700 mb-0.5">
-                    Password <span className="font-normal text-slate-400 text-[9px]">(optional)</span>
+                    Password <span className="font-normal text-slate-500 text-[9px]">(optional)</span>
                   </label>
                   <div className="relative">
-                    <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                    <Lock className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={passwordInput}
@@ -419,7 +419,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
                     >
                       {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                     </button>
@@ -452,7 +452,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                   setAuthMode('signup');
                   setNotification(null);
                 }}
-                className="font-bold text-blue-700 hover:text-blue-900 hover:underline cursor-pointer"
+                className="font-bold text-blue-700 hover:text-blue-800 hover:underline cursor-pointer"
               >
                 Create Account (Sign Up)
               </button>
@@ -477,7 +477,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                 Full Name <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
-                <User className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <User className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   required
@@ -496,7 +496,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                 Email Address <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
-                <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   required
@@ -514,7 +514,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                 Password (min 6 chars) <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
-                <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <Lock className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
@@ -527,7 +527,7 @@ export const DirectLoginCard: React.FC<DirectLoginCardProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
                 >
                   {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>

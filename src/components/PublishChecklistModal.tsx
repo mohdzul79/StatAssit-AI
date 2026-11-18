@@ -444,7 +444,7 @@ export const PublishChecklistModal: React.FC<PublishChecklistModalProps> = ({
                         }}
                         className={`mt-0.5 w-5 h-5 rounded-md flex items-center justify-center shrink-0 transition-colors ${
                           item.isCompleted
-                            ? 'bg-emerald-500 text-slate-950 shadow-xs'
+                            ? 'bg-emerald-500 text-white shadow-xs'
                             : 'border border-slate-600 group-hover:border-amber-400 text-transparent'
                         }`}
                       >
@@ -476,7 +476,7 @@ export const PublishChecklistModal: React.FC<PublishChecklistModalProps> = ({
 
                         <p
                           className={`text-2xs sm:text-xs leading-relaxed ${
-                            item.isCompleted ? 'text-slate-500' : 'text-slate-300'
+                            item.isCompleted ? 'text-slate-400' : 'text-slate-300'
                           }`}
                         >
                           {item.description}
@@ -525,7 +525,7 @@ export const PublishChecklistModal: React.FC<PublishChecklistModalProps> = ({
                   >
                     {copiedKeep ? (
                       <>
-                        <Check className="w-4 h-4 text-emerald-950" />
+                        <Check className="w-4 h-4 text-slate-950" />
                         <span>Copied! Opening Google Keep...</span>
                       </>
                     ) : (
@@ -633,7 +633,7 @@ export const PublishChecklistModal: React.FC<PublishChecklistModalProps> = ({
                   <span className="text-xs font-bold text-slate-300">
                     Live Google Keep Checklist Syntax Preview
                   </span>
-                  <span className="text-2xs font-mono text-slate-500">
+                  <span className="text-2xs font-mono text-slate-400">
                     Markdown / Checkbox Notation
                   </span>
                 </div>

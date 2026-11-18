@@ -268,22 +268,22 @@ export const StatAssistLogo: React.FC<StatAssistLogoProps> = ({
 
           {/* Subtitle / Tagline */}
           <p className="text-sm sm:text-base font-medium text-slate-200 tracking-wide">
-            Non-Hallucinating Statistical Computation & Pedagogical Scaffolding
+            Your Intelligent Statistical Analysis and Academic Research Assistant.
           </p>
 
           {/* Bottom Three Characteristic Pills */}
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-2.5 pt-1">
             <div className="px-3 py-1 rounded-lg text-xs font-mono font-medium text-cyan-300 bg-cyan-950/50 border border-cyan-500/40 flex items-center gap-1.5 shadow-2xs hover:border-cyan-400 transition-colors">
               <span className="text-cyan-400 font-bold">✓</span>
-              <span>FSM Logic Router</span>
+              <span>AIassisted analysis</span>
             </div>
             <div className="px-3 py-1 rounded-lg text-xs font-mono font-medium text-emerald-300 bg-emerald-950/50 border border-emerald-500/40 flex items-center gap-1.5 shadow-2xs hover:border-emerald-400 transition-colors">
               <span className="text-emerald-400 font-bold">✓</span>
-              <span>Zero-Retention RAM</span>
+              <span>Statistical validation</span>
             </div>
             <div className="px-3 py-1 rounded-lg text-xs font-mono font-medium text-amber-300 bg-amber-950/50 border border-amber-500/40 flex items-center gap-1.5 shadow-2xs hover:border-amber-400 transition-colors">
               <span className="text-amber-400 font-bold">✓</span>
-              <span>APA 7th Output</span>
+              <span>APA 7 reporting</span>
             </div>
           </div>
         </div>
