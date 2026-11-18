@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   X,
   BookOpen,
@@ -13,6 +13,14 @@ import {
   FileText,
   Sparkles,
   Lightbulb,
+  Network,
+  ChevronRight,
+  ChevronLeft,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  ChevronsUpDown,
+  ChevronsDownUp,
 } from 'lucide-react';
 import { StatisticalTestType } from '../types/stats';
 
@@ -45,7 +53,564 @@ interface TutorialModule {
   recommendedTestLabel?: string;
 }
 
+type MindMapAccent = 'slate' | 'emerald' | 'blue' | 'violet' | 'amber' | 'teal';
+
+interface MindMapTreeNode {
+  id: string;
+  label: string;
+  accent: MindMapAccent;
+  leafId?: string;
+  children?: MindMapTreeNode[];
+}
+
+interface PositionedMindMapNode {
+  id: string;
+  label: string;
+  accent: MindMapAccent;
+  depth: number;
+  x: number;
+  y: number;
+  w: number;
+  parentId?: string;
+  hasChildren: boolean;
+  isExpanded: boolean;
+  leafId?: string;
+}
+
+interface MindMapTestDetail {
+  leafId: string;
+  pathLabels: string[];
+  testName: string;
+  launchTestType?: StatisticalTestType;
+  nonParametricLabel?: string;
+  nonParametricTestType?: StatisticalTestType;
+  variablesNeeded: string;
+  apaPattern: string;
+  whenToUse: string;
+}
+
+const MINDMAP_NODE_H = 30;
+const MINDMAP_ROW_STEP = 40;
+const MINDMAP_COL_STEP = 186;
+const MINDMAP_NODE_W = 144;
+
+const MINDMAP_ACCENT_STYLES: Record<
+  MindMapAccent,
+  { pill: string; activePill: string; stroke: string }
+> = {
+  slate: {
+    pill: 'bg-slate-900 text-white border-slate-900',
+    activePill: 'bg-slate-900 text-white border-slate-900 ring-2 ring-blue-400',
+    stroke: '#64748b',
+  },
+  emerald: {
+    pill: 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:border-emerald-400',
+    activePill: 'bg-emerald-600 text-white border-emerald-600 ring-2 ring-emerald-200',
+    stroke: '#34d399',
+  },
+  blue: {
+    pill: 'bg-blue-50 text-blue-900 border-blue-200 hover:border-blue-400',
+    activePill: 'bg-blue-600 text-white border-blue-600 ring-2 ring-blue-200',
+    stroke: '#60a5fa',
+  },
+  violet: {
+    pill: 'bg-violet-50 text-violet-900 border-violet-200 hover:border-violet-400',
+    activePill: 'bg-violet-600 text-white border-violet-600 ring-2 ring-violet-200',
+    stroke: '#a78bfa',
+  },
+  amber: {
+    pill: 'bg-amber-50 text-amber-900 border-amber-200 hover:border-amber-400',
+    activePill: 'bg-amber-600 text-white border-amber-600 ring-2 ring-amber-200',
+    stroke: '#fbbf24',
+  },
+  teal: {
+    pill: 'bg-teal-50 text-teal-900 border-teal-200 hover:border-teal-400',
+    activePill: 'bg-teal-600 text-white border-teal-600 ring-2 ring-teal-200',
+    stroke: '#2dd4bf',
+  },
+};
+
+const MINDMAP_ROOT: MindMapTreeNode = {
+  id: 'mm-root',
+  label: 'Statistical Decision Map',
+  accent: 'slate',
+  children: [
+    {
+      id: 'mm-summarize',
+      label: 'Summarize Data',
+      accent: 'emerald',
+      children: [
+        {
+          id: 'leaf-descriptive',
+          label: 'Descriptive Statistics',
+          accent: 'emerald',
+          leafId: 'leaf-descriptive',
+        },
+      ],
+    },
+    {
+      id: 'mm-group',
+      label: 'Group Differences',
+      accent: 'blue',
+      children: [
+        {
+          id: 'mm-gd-one-dv',
+          label: 'One DV',
+          accent: 'blue',
+          children: [
+            {
+              id: 'mm-gd-1dv-nocov',
+              label: 'No Covariates',
+              accent: 'blue',
+              children: [
+                {
+                  id: 'mm-gd-one-iv',
+                  label: 'One IV',
+                  accent: 'blue',
+                  children: [
+                    {
+                      id: 'mm-gd-2-levels',
+                      label: '2 Levels',
+                      accent: 'blue',
+                      children: [
+                        {
+                          id: 'leaf-ind-ttest',
+                          label: 'Independent t-Test',
+                          accent: 'blue',
+                          leafId: 'leaf-ind-ttest',
+                        },
+                      ],
+                    },
+                    {
+                      id: 'mm-gd-gt2-levels',
+                      label: '> 2 Levels',
+                      accent: 'blue',
+                      children: [
+                        {
+                          id: 'leaf-anova',
+                          label: 'ANOVA',
+                          accent: 'blue',
+                          leafId: 'leaf-anova',
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  id: 'mm-gd-multi-iv',
+                  label: 'Multiple IVs',
+                  accent: 'blue',
+                  children: [
+                    {
+                      id: 'leaf-two-way-anova',
+                      label: 'Two-Way ANOVA',
+                      accent: 'blue',
+                      leafId: 'leaf-two-way-anova',
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 'mm-gd-1dv-cov',
+              label: 'Covariates',
+              accent: 'blue',
+              children: [
+                {
+                  id: 'leaf-ancova',
+                  label: 'ANCOVA',
+                  accent: 'blue',
+                  leafId: 'leaf-ancova',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: 'mm-gd-multi-dv',
+          label: 'Multiple DVs',
+          accent: 'blue',
+          children: [
+            {
+              id: 'mm-gd-mdv-nocov',
+              label: 'No Covariates',
+              accent: 'blue',
+              children: [
+                {
+                  id: 'leaf-manova',
+                  label: 'MANOVA',
+                  accent: 'blue',
+                  leafId: 'leaf-manova',
+                },
+              ],
+            },
+            {
+              id: 'mm-gd-mdv-cov',
+              label: 'Covariates',
+              accent: 'blue',
+              children: [
+                {
+                  id: 'leaf-mancova',
+                  label: 'MANCOVA',
+                  accent: 'blue',
+                  leafId: 'leaf-mancova',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'mm-predict',
+      label: 'Predict an Outcome',
+      accent: 'violet',
+      children: [
+        {
+          id: 'mm-pr-numeric',
+          label: 'Numeric DV',
+          accent: 'violet',
+          children: [
+            {
+              id: 'leaf-regression',
+              label: 'Linear Regression',
+              accent: 'violet',
+              leafId: 'leaf-regression',
+            },
+          ],
+        },
+        {
+          id: 'mm-pr-nominal',
+          label: 'Nominal DV',
+          accent: 'violet',
+          children: [
+            {
+              id: 'mm-pr-2-levels',
+              label: '2 Levels',
+              accent: 'violet',
+              children: [
+                {
+                  id: 'leaf-logistic',
+                  label: 'Binary Logistic',
+                  accent: 'violet',
+                  leafId: 'leaf-logistic',
+                },
+              ],
+            },
+            {
+              id: 'mm-pr-gt2-levels',
+              label: '> 2 Levels',
+              accent: 'violet',
+              children: [
+                {
+                  id: 'leaf-chisquare',
+                  label: 'Chi-Square (χ²)',
+                  accent: 'violet',
+                  leafId: 'leaf-chisquare',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'mm-assoc',
+      label: 'Test Relationships',
+      accent: 'amber',
+      children: [
+        {
+          id: 'mm-as-corr',
+          label: 'Numeric Pairs',
+          accent: 'amber',
+          children: [
+            {
+              id: 'leaf-corr',
+              label: 'Pearson / Spearman',
+              accent: 'amber',
+              leafId: 'leaf-corr',
+            },
+          ],
+        },
+        {
+          id: 'mm-as-paired',
+          label: 'Repeated / Paired',
+          accent: 'amber',
+          children: [
+            {
+              id: 'leaf-paired',
+              label: 'Paired t / RM-ANOVA',
+              accent: 'amber',
+              leafId: 'leaf-paired',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'mm-psych',
+      label: 'Scale & Factors',
+      accent: 'teal',
+      children: [
+        {
+          id: 'mm-ps-alpha',
+          label: 'Reliability Items',
+          accent: 'teal',
+          children: [
+            {
+              id: 'leaf-alpha',
+              label: "Cronbach's Alpha",
+              accent: 'teal',
+              leafId: 'leaf-alpha',
+            },
+          ],
+        },
+        {
+          id: 'mm-ps-sem',
+          label: 'Latent Structure',
+          accent: 'teal',
+          children: [
+            {
+              id: 'leaf-efa',
+              label: 'EFA / CFA / SEM',
+              accent: 'teal',
+              leafId: 'leaf-efa',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+function collectAllParentIds(node: MindMapTreeNode, acc: string[] = []): string[] {
+  if (node.children && node.children.length > 0) {
+    acc.push(node.id);
+    node.children.forEach((c) => collectAllParentIds(c, acc));
+  }
+  return acc;
+}
+
+const ALL_PARENT_IDS = collectAllParentIds(MINDMAP_ROOT);
+const DEFAULT_EXPANDED_IDS = [
+  'mm-root',
+  'mm-group',
+  'mm-gd-one-dv',
+  'mm-gd-1dv-nocov',
+  'mm-gd-one-iv',
+  'mm-gd-2-levels',
+  'mm-gd-gt2-levels',
+];
+
+function computeMindMapLayout(root: MindMapTreeNode, expandedIds: Set<string>) {
+  const nodes: PositionedMindMapNode[] = [];
+  let rowCursor = 0;
+  let maxDepth = 0;
+
+  const visit = (node: MindMapTreeNode, depth: number, parentId?: string): number => {
+    maxDepth = Math.max(maxDepth, depth);
+    const hasChildren = Boolean(node.children && node.children.length > 0);
+    const isExpanded = hasChildren && expandedIds.has(node.id);
+    const x = 24 + depth * MINDMAP_COL_STEP;
+    const w = depth === 0 ? 156 : MINDMAP_NODE_W;
+
+    if (!isExpanded || !node.children) {
+      const y = 24 + rowCursor * MINDMAP_ROW_STEP;
+      rowCursor += 1;
+      nodes.push({
+        id: node.id,
+        label: node.label,
+        accent: node.accent,
+        depth,
+        x,
+        y,
+        w,
+        parentId,
+        hasChildren,
+        isExpanded: false,
+        leafId: node.leafId,
+      });
+      return y;
+    }
+
+    const childYs = node.children.map((child) => visit(child, depth + 1, node.id));
+    const y = (childYs[0] + childYs[childYs.length - 1]) / 2;
+    nodes.push({
+      id: node.id,
+      label: node.label,
+      accent: node.accent,
+      depth,
+      x,
+      y,
+      w,
+      parentId,
+      hasChildren,
+      isExpanded: true,
+      leafId: node.leafId,
+    });
+    return y;
+  };
+
+  visit(root, 0);
+
+  const width = Math.max(680, 24 + (maxDepth + 1) * MINDMAP_COL_STEP + 24);
+  const height = Math.max(360, 24 + rowCursor * MINDMAP_ROW_STEP + 24);
+  return { nodes, width, height };
+}
+
+const FLOWCHART_DETAILS: Record<string, MindMapTestDetail> = {
+  'leaf-descriptive': {
+    leafId: 'leaf-descriptive',
+    pathLabels: ['Summarize Data', 'Descriptive Statistics'],
+    testName: 'Descriptive Statistics',
+    launchTestType: 'descriptive',
+    variablesNeeded: '1 or more continuous / numeric variables',
+    apaPattern: 'M = XX.XX, SD = X.XX, Mdn = XX.XX, Skewness = X.XX',
+    whenToUse: 'Summarize central tendency, dispersion, skewness, kurtosis, and normality screening.',
+  },
+  'leaf-ind-ttest': {
+    leafId: 'leaf-ind-ttest',
+    pathLabels: ['Group Differences', 'One DV', 'No Covariates', 'One IV', '2 Levels', 'Independent t-Test'],
+    testName: 'Independent-Samples t-Test',
+    launchTestType: 'independent_ttest',
+    nonParametricLabel: 'Mann-Whitney U Test',
+    nonParametricTestType: 'mann_whitney',
+    variablesNeeded: '1 categorical IV (2 groups) + 1 continuous DV',
+    apaPattern: 't(df) = X.XX, p = .XXX, d = X.XX, 95% CI [LL, UL]',
+    whenToUse: 'Compare mean scores between two unrelated groups (e.g., Treatment vs. Control).',
+  },
+  'leaf-anova': {
+    leafId: 'leaf-anova',
+    pathLabels: ['Group Differences', 'One DV', 'No Covariates', 'One IV', '> 2 Levels', 'ANOVA'],
+    testName: 'One-Way ANOVA (with Tukey HSD)',
+    launchTestType: 'anova',
+    nonParametricLabel: 'Kruskal-Wallis H Test',
+    nonParametricTestType: 'kruskal_wallis',
+    variablesNeeded: '1 categorical IV (3+ groups) + 1 continuous DV',
+    apaPattern: 'F(df₁, df₂) = X.XX, p = .XXX, η² = .XX',
+    whenToUse: 'Compare mean scores across three or more independent groups with post-hoc contrasts.',
+  },
+  'leaf-two-way-anova': {
+    leafId: 'leaf-two-way-anova',
+    pathLabels: ['Group Differences', 'One DV', 'No Covariates', 'Multiple IVs', 'Two-Way ANOVA'],
+    testName: 'Two-Way Factorial ANOVA',
+    launchTestType: 'two_way_anova',
+    variablesNeeded: '2 categorical IVs + 1 continuous DV',
+    apaPattern: 'F(df₁, df₂) = X.XX, p = .XXX, ηₚ² = .XX',
+    whenToUse: 'Test main effects of two factors simultaneously plus their interaction (Factor A × Factor B).',
+  },
+  'leaf-ancova': {
+    leafId: 'leaf-ancova',
+    pathLabels: ['Group Differences', 'One DV', 'Covariates', 'ANCOVA'],
+    testName: 'One-Way ANCOVA',
+    launchTestType: 'ancova',
+    variablesNeeded: '1 categorical IV + 1 continuous covariate + 1 continuous DV',
+    apaPattern: 'F(df₁, df₂) = X.XX, p = .XXX, ηₚ² = .XX',
+    whenToUse: 'Compare group means while statistically controlling for a continuous baseline covariate.',
+  },
+  'leaf-manova': {
+    leafId: 'leaf-manova',
+    pathLabels: ['Group Differences', 'Multiple DVs', 'No Covariates', 'MANOVA'],
+    testName: 'Multivariate Analysis of Variance (MANOVA)',
+    launchTestType: 'anova',
+    variablesNeeded: '1+ categorical IVs + 2 or more correlated continuous DVs',
+    apaPattern: "Wilks' Λ = .XX, F(df₁, df₂) = X.XX, p = .XXX, ηₚ² = .XX",
+    whenToUse: 'Evaluate group differences simultaneously across multiple conceptually related dependent variables.',
+  },
+  'leaf-mancova': {
+    leafId: 'leaf-mancova',
+    pathLabels: ['Group Differences', 'Multiple DVs', 'Covariates', 'MANCOVA'],
+    testName: 'Multivariate Analysis of Covariance (MANCOVA)',
+    launchTestType: 'ancova',
+    variablesNeeded: '1+ categorical IVs + multiple continuous DVs + continuous covariate(s)',
+    apaPattern: "Wilks' Λ = .XX, F(df₁, df₂) = X.XX, p = .XXX, ηₚ² = .XX",
+    whenToUse: 'Compare group vectors across multiple DVs while adjusting for pre-existing baseline covariates.',
+  },
+  'leaf-regression': {
+    leafId: 'leaf-regression',
+    pathLabels: ['Predict an Outcome', 'Numeric DV', 'Linear Regression'],
+    testName: 'Multiple Linear Regression',
+    launchTestType: 'regression',
+    variablesNeeded: '1 continuous DV + 1 or more numeric predictors',
+    apaPattern: 'F(df₁, df₂) = X.XX, p = .XXX, R² = .XX, Adjusted R² = .XX',
+    whenToUse: 'Predict a continuous score and quantify variance explained (R²) and standardized β weights.',
+  },
+  'leaf-logistic': {
+    leafId: 'leaf-logistic',
+    pathLabels: ['Predict an Outcome', 'Nominal DV', '2 Levels', 'Binary Logistic'],
+    testName: 'Binary Logistic Regression',
+    launchTestType: 'logistic_regression',
+    variablesNeeded: '1 binary categorical DV + 1 or more numeric predictors',
+    apaPattern: 'χ²(df) = X.XX, p = .XXX, Nagelkerke R² = .XX, OR = X.XX',
+    whenToUse: 'Predict binary outcome odds and Odds Ratios Exp(B) (e.g., Pass/Fail, Yes/No).',
+  },
+  'leaf-chisquare': {
+    leafId: 'leaf-chisquare',
+    pathLabels: ['Predict an Outcome', 'Nominal DV', '> 2 Levels', 'Chi-Square (χ²)'],
+    testName: 'Chi-Square Contingency / Goodness-of-Fit (χ²)',
+    launchTestType: 'chi_square',
+    nonParametricLabel: 'Chi-Square Goodness-of-Fit',
+    nonParametricTestType: 'chi_square_gof',
+    variablesNeeded: 'Categorical frequency variables (2+ categories)',
+    apaPattern: 'χ²(df, N = XX) = X.XX, p = .XXX, Cramér’s V = .XX',
+    whenToUse: 'Examine associations across multi-level nominal categories or compare observed vs. expected counts.',
+  },
+  'leaf-corr': {
+    leafId: 'leaf-corr',
+    pathLabels: ['Test Relationships', 'Numeric Pairs', 'Pearson / Spearman'],
+    testName: 'Pearson (r) / Spearman (ρ) Correlation',
+    launchTestType: 'correlation',
+    variablesNeeded: '2 or more continuous or ordinal numeric variables',
+    apaPattern: 'r(df) = .XX, p = .XXX, 95% CI [.LL, .UL]',
+    whenToUse: 'Measure strength and direction of linear (Pearson) or rank-monotonic (Spearman) associations.',
+  },
+  'leaf-paired': {
+    leafId: 'leaf-paired',
+    pathLabels: ['Test Relationships', 'Repeated / Paired', 'Paired t / RM-ANOVA'],
+    testName: 'Paired-Samples t-Test / Repeated-Measures ANOVA',
+    launchTestType: 'paired_ttest',
+    nonParametricLabel: 'Wilcoxon Signed-Rank / Friedman',
+    nonParametricTestType: 'wilcoxon_signed',
+    variablesNeeded: '2+ related measurements from the same cohort (Pre/Post/Follow-up)',
+    apaPattern: 't(df) = X.XX, p = .XXX, d = X.XX',
+    whenToUse: 'Compare within-subject change across 2 timepoints (Paired t) or 3+ timepoints (RM-ANOVA).',
+  },
+  'leaf-alpha': {
+    leafId: 'leaf-alpha',
+    pathLabels: ['Scale & Factors', 'Reliability Items', "Cronbach's Alpha"],
+    testName: "Cronbach's Alpha (α)",
+    launchTestType: 'cronbach_alpha',
+    variablesNeeded: '2 or more Likert / continuous scale items',
+    apaPattern: 'α = .XX (acceptable ≥ .70, strong ≥ .80)',
+    whenToUse: 'Evaluate internal consistency reliability of multi-item survey scales.',
+  },
+  'leaf-efa': {
+    leafId: 'leaf-efa',
+    pathLabels: ['Scale & Factors', 'Latent Structure', 'EFA / CFA / SEM'],
+    testName: 'Exploratory & Confirmatory Factor Analysis / SEM',
+    launchTestType: 'exploratory_factor_analysis',
+    nonParametricLabel: 'Confirmatory Factor Analysis (CFA)',
+    nonParametricTestType: 'confirmatory_factor_analysis',
+    variablesNeeded: '3 or more continuous / Likert construct indicators',
+    apaPattern: 'KMO = .XX, CFI = .XX, RMSEA = .XX',
+    whenToUse: 'Identify latent dimensions (EFA), test measurement model fit (CFA), or estimate structural paths (SEM).',
+  },
+};
+
 const TUTORIAL_MODULES: TutorialModule[] = [
+  {
+    id: 'decision-tree',
+    category: 'Mind Map',
+    title: 'Interactive Statistical Mind Map',
+    subtitle: 'Notebook-style expandable mind map from research goal and variables to the exact test.',
+    readTime: 'Interactive',
+    level: 'Foundational',
+    icon: Network,
+    summary:
+      'Explore your statistical decision path like an interactive mind map—click nodes or branch toggles to unfold or collapse pathways, drag to pan, zoom in/out, and launch any test directly.',
+    keyTakeaways: [],
+    sections: [],
+  },
   {
     id: 'choosing-test',
     category: 'Study Design',
@@ -264,6 +829,105 @@ export const LearningCentreModal: React.FC<LearningCentreModalProps> = ({
 }) => {
   const [selectedModuleId, setSelectedModuleId] = useState<string>(TUTORIAL_MODULES[0].id);
   const [searchQuery, setSearchQuery] = useState('');
+  const [expandedNodeIds, setExpandedNodeIds] = useState<Set<string>>(() => new Set(DEFAULT_EXPANDED_IDS));
+  const [selectedNodeId, setSelectedNodeId] = useState<string>('leaf-ind-ttest');
+  const [zoom, setZoom] = useState<number>(0.95);
+  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 16, y: 16 });
+  const dragStateRef = useRef<{ active: boolean; startX: number; startY: number; origX: number; origY: number }>({
+    active: false,
+    startX: 0,
+    startY: 0,
+    origX: 0,
+    origY: 0,
+  });
+
+  const mindMapLayout = useMemo(
+    () => computeMindMapLayout(MINDMAP_ROOT, expandedNodeIds),
+    [expandedNodeIds]
+  );
+
+  const highlightedNodeIds = useMemo(() => {
+    const activeIds = new Set<string>();
+    const nodeMap = new Map(mindMapLayout.nodes.map((n) => [n.id, n]));
+    let curr: PositionedMindMapNode | undefined = nodeMap.get(selectedNodeId);
+    while (curr) {
+      activeIds.add(curr.id);
+      curr = curr.parentId ? nodeMap.get(curr.parentId) : undefined;
+    }
+    return activeIds;
+  }, [mindMapLayout.nodes, selectedNodeId]);
+
+  const activeLeafDetail = useMemo(() => {
+    if (FLOWCHART_DETAILS[selectedNodeId]) {
+      return FLOWCHART_DETAILS[selectedNodeId];
+    }
+    const findFirstLeaf = (node: MindMapTreeNode): string | null => {
+      if (node.leafId) return node.leafId;
+      if (node.children) {
+        for (const c of node.children) {
+          const found = findFirstLeaf(c);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    const findTreeNode = (node: MindMapTreeNode, targetId: string): MindMapTreeNode | null => {
+      if (node.id === targetId) return node;
+      if (node.children) {
+        for (const c of node.children) {
+          const found = findTreeNode(c, targetId);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    const matched = findTreeNode(MINDMAP_ROOT, selectedNodeId);
+    const leafId = (matched && findFirstLeaf(matched)) || 'leaf-ind-ttest';
+    return FLOWCHART_DETAILS[leafId] || FLOWCHART_DETAILS['leaf-ind-ttest'];
+  }, [selectedNodeId]);
+
+  const toggleExpandNode = (nodeId: string) => {
+    setExpandedNodeIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(nodeId)) {
+        next.delete(nodeId);
+      } else {
+        next.add(nodeId);
+      }
+      return next;
+    });
+  };
+
+  const handleMindMapNodeSelect = (node: PositionedMindMapNode) => {
+    setSelectedNodeId(node.id);
+    if (node.hasChildren && !node.isExpanded) {
+      setExpandedNodeIds((prev) => {
+        const next = new Set(prev);
+        next.add(node.id);
+        return next;
+      });
+    }
+  };
+
+  const handleExpandAll = () => {
+    setExpandedNodeIds(new Set(ALL_PARENT_IDS));
+    setZoom(0.75);
+    setPan({ x: 8, y: 8 });
+  };
+
+  const handleCollapseBranches = () => {
+    setExpandedNodeIds(new Set(['mm-root']));
+    setSelectedNodeId('mm-group');
+    setZoom(1);
+    setPan({ x: 24, y: 40 });
+  };
+
+  const handleResetView = () => {
+    setExpandedNodeIds(new Set(DEFAULT_EXPANDED_IDS));
+    setSelectedNodeId('leaf-ind-ttest');
+    setZoom(0.85);
+    setPan({ x: 8, y: 12 });
+  };
 
   const filteredModules = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -285,14 +949,17 @@ export const LearningCentreModal: React.FC<LearningCentreModalProps> = ({
   if (!isOpen) return null;
 
   const ActiveIcon = activeModule.icon;
+  const isMindMapActive = activeModule.id === 'decision-tree';
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200"
+        className={`bg-white rounded-2xl w-full flex flex-col overflow-hidden shadow-2xl border border-slate-200 transition-all duration-200 ${
+          isMindMapActive ? 'max-w-[97vw] h-[94vh]' : 'max-w-5xl max-h-[90vh]'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -302,9 +969,6 @@ export const LearningCentreModal: React.FC<LearningCentreModalProps> = ({
             <h2 className="text-base font-semibold text-slate-900 tracking-tight">
               Learning Centre
             </h2>
-            <span className="text-xs text-slate-400 font-normal hidden sm:inline">
-              · Statistical Tutorials
-            </span>
           </div>
 
           <button
@@ -320,7 +984,7 @@ export const LearningCentreModal: React.FC<LearningCentreModalProps> = ({
         {/* Body Layout */}
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
           {/* Left Navigation List */}
-          <aside className="w-full md:w-72 border-b md:border-b-0 md:border-r border-slate-200 bg-slate-50/70 p-4 flex flex-col gap-3 shrink-0 overflow-y-auto max-h-56 md:max-h-none">
+          <aside className="w-full md:w-68 border-b md:border-b-0 md:border-r border-slate-200 bg-slate-50/70 p-4 flex flex-col gap-3 shrink-0 overflow-y-auto max-h-56 md:max-h-none">
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -362,14 +1026,8 @@ export const LearningCentreModal: React.FC<LearningCentreModalProps> = ({
                         <IconComp className="w-3.5 h-3.5" />
                       </div>
                       <div className="min-w-0">
-                        <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-blue-600">
-                          {mod.category}
-                        </div>
                         <div className="text-xs font-bold text-slate-900 leading-snug">
                           {mod.title}
-                        </div>
-                        <div className="text-[11px] text-slate-500 mt-0.5">
-                          {mod.readTime} · {mod.level}
                         </div>
                       </div>
                     </button>
@@ -380,113 +1038,379 @@ export const LearningCentreModal: React.FC<LearningCentreModalProps> = ({
           </aside>
 
           {/* Right Tutorial Content Pane */}
-          <div className="flex-1 overflow-y-auto p-6 sm:p-7 space-y-6 bg-white">
-            {/* Module Title Banner */}
-            <div className="space-y-2 pb-4 border-b border-slate-100">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                  <ActiveIcon className="w-3 h-3" />
-                  <span>{activeModule.category}</span>
-                </span>
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600">
-                  {activeModule.level}
-                </span>
-                <span className="text-[11px] text-slate-500 font-mono">
-                  {activeModule.readTime}
-                </span>
+          <div
+            className={
+              isMindMapActive
+                ? 'flex-1 flex flex-col overflow-hidden p-4 sm:p-5 gap-3 bg-white'
+                : 'flex-1 overflow-y-auto p-6 sm:p-7 space-y-6 bg-white'
+            }
+          >
+            {/* Module Title Banner (Compact bar in Mind Map full view mode) */}
+            {isMindMapActive ? (
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-2.5 border-b border-slate-100 shrink-0">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight truncate">
+                    {activeModule.title}
+                  </h3>
+                </div>
               </div>
+            ) : (
+              <div className="space-y-2 pb-4 border-b border-slate-100">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                    <ActiveIcon className="w-3 h-3" />
+                    <span>{activeModule.category}</span>
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600">
+                    {activeModule.level}
+                  </span>
+                  <span className="text-[11px] text-slate-500 font-mono">
+                    {activeModule.readTime}
+                  </span>
+                </div>
 
-              <h3 className="text-xl font-bold text-slate-900 tracking-tight">
-                {activeModule.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                {activeModule.summary}
-              </p>
-            </div>
+                <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                  {activeModule.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  {activeModule.summary}
+                </p>
+              </div>
+            )}
 
             {/* Key Takeaways Callout */}
-            <div className="p-4 rounded-xl bg-blue-50/70 border border-blue-200 space-y-2">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-blue-800 uppercase tracking-wider">
-                <Lightbulb className="w-3.5 h-3.5 text-blue-600" />
-                <span>Key Methodological Takeaways</span>
+            {activeModule.keyTakeaways.length > 0 && (
+              <div className="p-4 rounded-xl bg-blue-50/70 border border-blue-200 space-y-2">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-blue-800 uppercase tracking-wider">
+                  <Lightbulb className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Key Methodological Takeaways</span>
+                </div>
+                <ul className="space-y-1.5">
+                  {activeModule.keyTakeaways.map((point, i) => (
+                    <li key={i} className="flex items-start gap-2 text-xs text-slate-700 leading-relaxed">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-1.5">
-                {activeModule.keyTakeaways.map((point, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs text-slate-700 leading-relaxed">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>{point}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            )}
+
+            {/* Interactive Studio Mind Map Canvas */}
+            {isMindMapActive && (
+              <div className="flex-1 min-h-0 flex flex-col gap-3">
+                <div
+                  className="relative flex-1 min-h-[240px] rounded-xl border border-slate-200 bg-slate-50 overflow-hidden select-none cursor-grab active:cursor-grabbing"
+                  style={{
+                    backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)',
+                    backgroundSize: '18px 18px',
+                  }}
+                  onPointerDown={(e) => {
+                    if ((e.target as HTMLElement).closest('button')) return;
+                    dragStateRef.current = {
+                      active: true,
+                      startX: e.clientX,
+                      startY: e.clientY,
+                      origX: pan.x,
+                      origY: pan.y,
+                    };
+                  }}
+                  onPointerMove={(e) => {
+                    if (!dragStateRef.current.active) return;
+                    const dx = e.clientX - dragStateRef.current.startX;
+                    const dy = e.clientY - dragStateRef.current.startY;
+                    setPan({
+                      x: dragStateRef.current.origX + dx,
+                      y: dragStateRef.current.origY + dy,
+                    });
+                  }}
+                  onPointerUp={() => {
+                    dragStateRef.current.active = false;
+                  }}
+                  onPointerLeave={() => {
+                    dragStateRef.current.active = false;
+                  }}
+                >
+                  {/* Top Toolbar */}
+                  <div className="absolute top-3 right-3 z-20 flex items-center justify-end gap-2 pointer-events-none">
+                    <div className="pointer-events-auto inline-flex items-center gap-1 p-1 rounded-lg bg-white/95 backdrop-blur-xs border border-slate-200 shadow-xs">
+                      <button
+                        type="button"
+                        onClick={handleExpandAll}
+                        className="px-2 py-1 rounded text-[11px] font-medium text-slate-700 hover:bg-slate-100 inline-flex items-center gap-1 cursor-pointer"
+                        title="Expand all branches"
+                      >
+                        <ChevronsUpDown className="w-3 h-3 text-blue-600" />
+                        <span>Expand All</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleCollapseBranches}
+                        className="px-2 py-1 rounded text-[11px] font-medium text-slate-700 hover:bg-slate-100 inline-flex items-center gap-1 cursor-pointer"
+                        title="Collapse to top-level branches"
+                      >
+                        <ChevronsDownUp className="w-3 h-3 text-slate-500" />
+                        <span>Collapse</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Pan & Zoom Transform Stage */}
+                  <div
+                    style={{
+                      width: `${mindMapLayout.width}px`,
+                      height: `${mindMapLayout.height}px`,
+                      transform: `translate(${pan.x}px, ${pan.y + 30}px) scale(${zoom})`,
+                      transformOrigin: '0 0',
+                    }}
+                    className="relative transition-transform duration-150 ease-out"
+                  >
+                    {/* Smooth Cubic Bezier Curves SVG Layer */}
+                    <svg
+                      width={mindMapLayout.width}
+                      height={mindMapLayout.height}
+                      viewBox={`0 0 ${mindMapLayout.width} ${mindMapLayout.height}`}
+                      className="absolute inset-0 pointer-events-none"
+                    >
+                      {mindMapLayout.nodes.map((node) => {
+                        if (!node.parentId) return null;
+                        const parent = mindMapLayout.nodes.find((p) => p.id === node.parentId);
+                        if (!parent) return null;
+                        const x1 = parent.x + parent.w;
+                        const y1 = parent.y + MINDMAP_NODE_H / 2;
+                        const x2 = node.x;
+                        const y2 = node.y + MINDMAP_NODE_H / 2;
+                        const cx = (x1 + x2) / 2;
+                        const isActiveEdge =
+                          highlightedNodeIds.has(parent.id) && highlightedNodeIds.has(node.id);
+                        const strokeColor = isActiveEdge
+                          ? '#2563eb'
+                          : MINDMAP_ACCENT_STYLES[node.accent].stroke;
+
+                        return (
+                          <path
+                            key={`${parent.id}->${node.id}`}
+                            d={`M ${x1} ${y1} C ${cx} ${y1}, ${cx} ${y2}, ${x2} ${y2}`}
+                            fill="none"
+                            stroke={strokeColor}
+                            strokeWidth={isActiveEdge ? 2.6 : 1.7}
+                            strokeOpacity={isActiveEdge ? 1 : 0.65}
+                            strokeLinecap="round"
+                          />
+                        );
+                      })}
+                    </svg>
+
+                    {/* Interactive Mind Map Node Pills with Fold/Unfold Toggles */}
+                    {mindMapLayout.nodes.map((node) => {
+                      const isActive = highlightedNodeIds.has(node.id);
+                      const accentStyle = MINDMAP_ACCENT_STYLES[node.accent];
+                      return (
+                        <div
+                          key={node.id}
+                          style={{
+                            left: `${node.x}px`,
+                            top: `${node.y}px`,
+                            width: `${node.w}px`,
+                            height: `${MINDMAP_NODE_H}px`,
+                          }}
+                          className="absolute flex items-center"
+                        >
+                          <button
+                            type="button"
+                            onClick={() => handleMindMapNodeSelect(node)}
+                            className={`w-full h-full flex items-center justify-between px-2.5 text-[11px] font-medium rounded-lg border shadow-2xs transition-all cursor-pointer ${
+                              isActive ? accentStyle.activePill : accentStyle.pill
+                            }`}
+                            title={node.label}
+                          >
+                            <span className="truncate">{node.label}</span>
+                          </button>
+
+                          {node.hasChildren && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleExpandNode(node.id);
+                              }}
+                              aria-label={node.isExpanded ? `Collapse ${node.label}` : `Expand ${node.label}`}
+                              className={`-ml-2.5 z-10 w-5 h-5 rounded-full border shadow-xs flex items-center justify-center transition-colors shrink-0 cursor-pointer ${
+                                node.isExpanded
+                                  ? 'bg-white border-slate-300 text-slate-600 hover:border-blue-500 hover:text-blue-600'
+                                  : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700'
+                              }`}
+                            >
+                              {node.isExpanded ? (
+                                <ChevronLeft className="w-3 h-3" />
+                              ) : (
+                                <ChevronRight className="w-3 h-3" />
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Bottom-Right Studio Zoom Controls */}
+                  <div className="absolute bottom-3 right-3 z-20 inline-flex items-center gap-1 p-1 rounded-lg bg-white/95 backdrop-blur-xs border border-slate-200 shadow-xs">
+                    <button
+                      type="button"
+                      onClick={() => setZoom((z) => Math.max(0.5, Number((z - 0.1).toFixed(2))))}
+                      className="p-1.5 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
+                      aria-label="Zoom out"
+                      title="Zoom out"
+                    >
+                      <ZoomOut className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="px-1.5 text-[11px] font-mono text-slate-600 min-w-[42px] text-center">
+                      {Math.round(zoom * 100)}%
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setZoom((z) => Math.min(1.5, Number((z + 0.1).toFixed(2))))}
+                      className="p-1.5 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
+                      aria-label="Zoom in"
+                      title="Zoom in"
+                    >
+                      <ZoomIn className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleResetView}
+                      className="p-1.5 rounded text-slate-600 hover:bg-slate-100 hover:text-blue-600 border-l border-slate-200 pl-2 cursor-pointer"
+                      aria-label="Reset mind map view"
+                      title="Reset view"
+                    >
+                      <Maximize2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Selected Leaf Test Inspector Strip (Full View Slim Footer) */}
+                <div className="shrink-0 rounded-xl border border-slate-200 bg-slate-50/90 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center gap-2 min-w-0">
+                    <span className="text-xs font-bold text-slate-900">{activeLeafDetail.testName}</span>
+                    <span className="text-[11px] font-mono text-blue-700 bg-white px-2 py-0.5 rounded border border-slate-200">
+                      {activeLeafDetail.apaPattern}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 shrink-0">
+                    {activeLeafDetail.nonParametricLabel &&
+                      activeLeafDetail.nonParametricTestType &&
+                      onLaunchTutorialTest && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onLaunchTutorialTest(activeLeafDetail.nonParametricTestType!);
+                            onClose();
+                          }}
+                          className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition-colors cursor-pointer"
+                        >
+                          Alt: {activeLeafDetail.nonParametricLabel}
+                        </button>
+                      )}
+
+                    {activeLeafDetail.launchTestType && onLaunchTutorialTest && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onLaunchTutorialTest(activeLeafDetail.launchTestType!);
+                          onClose();
+                        }}
+                        className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Launch Test Preset</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition-colors cursor-pointer"
+                    >
+                      Close Tutorials
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Detailed Tutorial Sections */}
-            <div className="space-y-4">
-              {activeModule.sections.map((section, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2"
-                >
-                  <h4 className="text-sm font-bold text-slate-900">{section.heading}</h4>
-                  <p className="text-xs text-slate-700 leading-relaxed">{section.body}</p>
+            {activeModule.sections.length > 0 && (
+              <div className="space-y-4">
+                {activeModule.sections.map((section, idx) => (
+                  <div
+                    key={idx}
+                    className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2"
+                  >
+                    <h4 className="text-sm font-bold text-slate-900">{section.heading}</h4>
+                    <p className="text-xs text-slate-700 leading-relaxed">{section.body}</p>
 
-                  {section.formula && (
-                    <div className="px-3 py-2 rounded-lg bg-white border border-slate-200 font-mono text-[11px] text-blue-700 font-semibold">
-                      {section.formula}
-                    </div>
-                  )}
+                    {section.formula && (
+                      <div className="px-3 py-2 rounded-lg bg-white border border-slate-200 font-mono text-[11px] text-blue-700 font-semibold">
+                        {section.formula}
+                      </div>
+                    )}
 
-                  {section.bullets && (
-                    <ul className="list-disc pl-4 space-y-1 text-xs text-slate-700 leading-relaxed pt-1">
-                      {section.bullets.map((b, bIdx) => (
-                        <li key={bIdx}>{b}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </div>
+                    {section.bullets && (
+                      <ul className="list-disc pl-4 space-y-1 text-xs text-slate-700 leading-relaxed pt-1">
+                        {section.bullets.map((b, bIdx) => (
+                          <li key={bIdx}>{b}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
-            {/* Interactive Action Strip */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100">
-              {activeModule.recommendedTest && onLaunchTutorialTest ? (
+            {/* Interactive Action Strip (non-Mind-Map tutorials) */}
+            {!isMindMapActive && (
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-slate-100 shrink-0">
+                {activeModule.recommendedTest && onLaunchTutorialTest ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onLaunchTutorialTest(activeModule.recommendedTest!);
+                      onClose();
+                    }}
+                    className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-2xs transition-colors flex items-center gap-2 cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>{activeModule.recommendedTestLabel || 'Try Interactive Preset'}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                ) : onOpenApaGuide ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onOpenApaGuide();
+                    }}
+                    className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-2xs transition-colors flex items-center gap-2 cursor-pointer"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>Open Full APA 7th Reference Guide</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                ) : (
+                  <div />
+                )}
+
                 <button
                   type="button"
-                  onClick={() => {
-                    onLaunchTutorialTest(activeModule.recommendedTest!);
-                    onClose();
-                  }}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-2xs transition-colors flex items-center gap-2 cursor-pointer"
+                  onClick={onClose}
+                  className="px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition-colors cursor-pointer"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>{activeModule.recommendedTestLabel || 'Try Interactive Preset'}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  Close Tutorials
                 </button>
-              ) : onOpenApaGuide ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClose();
-                    onOpenApaGuide();
-                  }}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-2xs transition-colors flex items-center gap-2 cursor-pointer"
-                >
-                  <BookOpen className="w-3.5 h-3.5" />
-                  <span>Open Full APA 7th Reference Guide</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              ) : (
-                <div />
-              )}
-
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition-colors cursor-pointer"
-              >
-                Close Tutorials
-              </button>
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
