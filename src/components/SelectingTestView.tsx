@@ -27,6 +27,10 @@ import { StatisticalTestType } from '../types/stats';
 import { TEST_STUDY_PRESETS, TestStudyPreset } from '../utils/testStudyPresets';
 import { GRAPH_CHART_TAXONOMY, GraphChartProfile } from '../data/graphChartProfiles';
 import {
+  RECOMMENDED_CHARTS_CATALOG,
+  getRecommendedChartsForTest,
+} from '../utils/recommendedCharts';
+import {
   EXTENDED_STATISTICAL_TEST_DATABASE,
   StatisticalTestRecommendation,
 } from '../data/extendedStatisticalDatabase';
@@ -738,7 +742,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Step-by-Step Diagnostic</span>
+              <span>Step by Step</span>
             </button>
             <button
               onClick={() => setViewMode('matrix')}
@@ -749,7 +753,7 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
               }`}
             >
               <Grid className="w-3.5 h-3.5" />
-              <span>Comprehensive Test Matrix</span>
+              <span>Test Matrix</span>
             </button>
           </div>
         </div>
@@ -1395,6 +1399,106 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                 </div>
               </div>
 
+              {/* Recommended Charts Matched to Selected Test */}
+              {(() => {
+                const chartRec = getRecommendedChartsForTest(activeTestDetails.testId);
+                return (
+                  <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                      <div className="flex items-center gap-2">
+                        <BarChart2 className="w-4 h-4 text-blue-600 shrink-0" />
+                        <h3 className="text-sm font-bold text-slate-900">
+                          Recommended charts
+                        </h3>
+                        <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                          Matched to {activeTestDetails.testTitle}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-slate-500">
+                        {chartRec.primary.length} Primary · {chartRec.diagnostic.length} Diagnostic
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {chartRec.rationale}
+                    </p>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      {chartRec.primary.map((c) => (
+                        <span
+                          key={c.id}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-2xs"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>{c.chart}</span>
+                          <span className="text-blue-100 font-normal">({c.application})</span>
+                        </span>
+                      ))}
+                      {chartRec.diagnostic.map((c) => (
+                        <span
+                          key={c.id}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>{c.chart}</span>
+                          <span className="text-emerald-700/80">({c.application})</span>
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="overflow-x-auto rounded-lg border border-slate-200">
+                      <table className="w-full text-left border-collapse text-xs">
+                        <thead>
+                          <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold">
+                            <th className="py-2.5 px-4">Chart</th>
+                            <th className="py-2.5 px-4">Application</th>
+                            <th className="py-2.5 px-4 text-right">Suitability</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {RECOMMENDED_CHARTS_CATALOG.map((item) => {
+                            const isPrimary = chartRec.primaryIds.includes(item.id);
+                            const isDiagnostic = chartRec.diagnosticIds.includes(item.id);
+                            return (
+                              <tr
+                                key={item.id}
+                                className={
+                                  isPrimary
+                                    ? 'bg-blue-50/70'
+                                    : isDiagnostic
+                                    ? 'bg-emerald-50/40'
+                                    : 'bg-white text-slate-500'
+                                }
+                              >
+                                <td className={`py-2 px-4 ${isPrimary || isDiagnostic ? 'font-bold text-slate-900' : 'font-medium text-slate-600'}`}>
+                                  {item.chart}
+                                </td>
+                                <td className={`py-2 px-4 ${isPrimary || isDiagnostic ? 'text-slate-800' : 'text-slate-500'}`}>
+                                  {item.application}
+                                </td>
+                                <td className="py-2 px-4 text-right">
+                                  {isPrimary ? (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600 text-white">
+                                      Recommended Primary
+                                    </span>
+                                  ) : isDiagnostic ? (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                      Assumption Diagnostic
+                                    </span>
+                                  ) : (
+                                    <span className="text-[10px] text-slate-400">—</span>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })()}
+
               {/* APA 7th Edition Reporting Syntax & Master Example */}
               <div className="bg-slate-900 text-white rounded-xl p-5 space-y-3">
                 <div className="flex items-center justify-between text-xs">
@@ -1714,8 +1818,26 @@ export const SelectingTestView: React.FC<SelectingTestViewProps> = ({
                       </div>
                     </div>
 
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100 text-[11px] font-mono text-slate-700">
-                      {test.apaSyntax}
+                    {activeCategoryFilter !== 'all' && (
+                      <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100 text-[11px] font-mono text-slate-700">
+                        {test.apaSyntax}
+                      </div>
+                    )}
+
+                    {/* Recommended Charts for Test Choice */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                        Recommended charts:
+                      </span>
+                      {getRecommendedChartsForTest(test.testId).primary.map((c) => (
+                        <span
+                          key={c.id}
+                          title={`${c.chart}: ${c.application}`}
+                          className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200"
+                        >
+                          {c.chart}
+                        </span>
+                      ))}
                     </div>
 
                     {/* Pre-set study mapping */}

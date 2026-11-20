@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ArrowRight,
   Sparkles,
@@ -6,6 +6,9 @@ import {
 } from 'lucide-react';
 import { StatAssistLogo } from './StatAssistLogo';
 import { UserProfile } from '../types/user';
+
+const HERO_DESCRIPTION =
+  "Whether you are conducting your undergraduate research, completing a Master's dissertation or pursuing a PhD, StatAssist AI empowers you to approach quantitative research with greater clarity, confidence and productivity. Spend less time struggling with statistics. Spend more time discovering meaningful insights";
 
 interface LandingPageProps {
   onEnterWorkspace: (tab?: 'data' | 'analysis' | 'apa-report' | 'wizard') => void;
@@ -18,10 +21,50 @@ interface LandingPageProps {
 export const LandingPage: React.FC<LandingPageProps> = ({
   onEnterWorkspace,
 }) => {
+  const [typedLength, setTypedLength] = useState(0);
+  const [showStartButton, setShowStartButton] = useState(false);
+
+  useEffect(() => {
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+      setTypedLength(HERO_DESCRIPTION.length);
+      setShowStartButton(true);
+      return;
+    }
+
+    setTypedLength(0);
+    setShowStartButton(false);
+    let current = 0;
+    let revealTimeoutId: number | undefined;
+
+    const intervalId = window.setInterval(() => {
+      current += 1;
+      setTypedLength(current);
+      if (current >= HERO_DESCRIPTION.length) {
+        window.clearInterval(intervalId);
+        revealTimeoutId = window.setTimeout(() => {
+          setShowStartButton(true);
+        }, 3000);
+      }
+    }, 73);
+
+    return () => {
+      window.clearInterval(intervalId);
+      if (revealTimeoutId !== undefined) {
+        window.clearTimeout(revealTimeoutId);
+      }
+    };
+  }, []);
+
   const handleNav = (tab: 'data' | 'analysis' | 'apa-report' | 'wizard') => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     onEnterWorkspace(tab);
   };
+
+  const isTyping = typedLength < HERO_DESCRIPTION.length;
 
   return (
     <div className="min-h-screen bg-[#050914] text-slate-100 flex flex-col selection:bg-cyan-500 selection:text-black">
@@ -52,8 +95,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </h1>
 
               {/* Description */}
-              <p className="text-slate-300 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl mx-auto">
-                Whether you are conducting your undergraduate research, completing a Master&apos;s dissertation or pursuing a PhD, StatAssist AI empowers you to approach quantitative research with greater clarity, confidence and productivity. Spend less time struggling with statistics. Spend more time discovering meaningful insights
+              <p className="relative text-slate-300 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl mx-auto">
+                <span className="invisible select-none" aria-hidden="true">
+                  {HERO_DESCRIPTION}
+                </span>
+                <span className="absolute inset-0">
+                  {HERO_DESCRIPTION.slice(0, typedLength)}
+                  <span
+                    className={`inline-block w-[2px] h-[1.05em] bg-cyan-400 align-[-0.12em] ml-0.5 ${
+                      isTyping ? 'animate-pulse' : 'animate-pulse opacity-75'
+                    }`}
+                    aria-hidden="true"
+                  />
+                </span>
               </p>
 
               {/* Instant Workspace Access CTA Buttons */}
@@ -61,7 +115,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <button
                   type="button"
                   onClick={() => handleNav('wizard')}
-                  className="px-7 py-3.5 rounded-xl text-sm sm:text-base font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white transition-all shadow-lg shadow-cyan-500/25 flex items-center gap-2.5 cursor-pointer group"
+                  tabIndex={showStartButton ? 0 : -1}
+                  aria-hidden={!showStartButton}
+                  className={`px-7 py-3.5 rounded-xl text-sm sm:text-base font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white transition-all duration-500 shadow-lg shadow-cyan-500/25 flex items-center gap-2.5 cursor-pointer group ${
+                    showStartButton
+                      ? 'opacity-100 visible translate-y-0'
+                      : 'opacity-0 invisible pointer-events-none translate-y-2'
+                  }`}
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>Start Now</span>

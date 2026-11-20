@@ -35,6 +35,9 @@ import {
 import { Dataset, VariableType, ColumnMetadata, ResearchQuestion, StatisticalTestType } from '../types/stats';
 import { SAMPLE_DATASETS, parseCsv } from '../data/sampleDatasets';
 import { isPresetStudyDataset } from '../utils/testStudyPresets';
+import { TestLibraryEntry, isTestLibraryDataset } from '../data/testLibraryDatasets';
+import { TestLibraryPanel } from './TestLibraryPanel';
+import { parseNumericCell } from '../utils/statisticalMath';
 import {
   refreshDatasetMetadata,
   resizeDatasetN,
@@ -68,6 +71,7 @@ interface DatasetManagerProps {
   onSelectTestAndStudy?: (test: StatisticalTestType) => void;
   onNavigateToSelectingTest?: () => void;
   onOpenGoogleDrive?: () => void;
+  onLoadLibraryEntry?: (entry: TestLibraryEntry) => void;
 }
 
 export const DatasetManager: React.FC<DatasetManagerProps> = ({
@@ -90,6 +94,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
   onSelectTestAndStudy,
   onNavigateToSelectingTest,
   onOpenGoogleDrive,
+  onLoadLibraryEntry,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [pasteModalOpen, setPasteModalOpen] = useState(false);
@@ -335,7 +340,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
         newRowObj[col.name] = `OBS_${String(nextRowNumber).padStart(3, '0')}`;
       } else if (col.type === 'continuous') {
         // Sample random number close to current sample mean if available
-        const numbers = currentDataset.data.map((r) => Number(r[col.name])).filter((n) => !isNaN(n));
+        const numbers = currentDataset.data.map((r) => parseNumericCell(r[col.name])).filter((n) => !isNaN(n));
         const mean = numbers.length > 0 ? Math.round(numbers.reduce((a, b) => a + b, 0) / numbers.length) : 50;
         newRowObj[col.name] = mean;
       } else {
@@ -541,7 +546,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
   const handleApplyTransform = () => {
     if (!transformColName) return;
     const numbers = currentDataset.data
-      .map((r) => Number(r[transformColName]))
+      .map((r) => parseNumericCell(r[transformColName]))
       .filter((n) => !isNaN(n) && isFinite(n));
 
     if (numbers.length === 0) {
@@ -557,7 +562,7 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
     const sd = Math.sqrt(variance) || 1;
 
     const updatedData = currentDataset.data.map((row) => {
-      const val = Number(row[transformColName]);
+      const val = parseNumericCell(row[transformColName]);
       if (isNaN(val)) return row;
 
       let newVal = val;
@@ -601,7 +606,8 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
 
   const isCurrentSample =
     SAMPLE_DATASETS.some((s) => s.id === currentDataset.id) ||
-    isPresetStudyDataset(currentDataset.id);
+    isPresetStudyDataset(currentDataset.id) ||
+    isTestLibraryDataset(currentDataset.id);
   const continuousCount = currentDataset.columns.filter((c) => c.type === 'continuous').length;
   const categoricalCount = currentDataset.columns.filter((c) => c.type === 'categorical').length;
   const idCount = currentDataset.columns.filter((c) => c.type === 'id').length;
@@ -750,6 +756,18 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
               >
                 <Download className="w-3.5 h-3.5 text-slate-500" />
                 <span>Export CSV</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('permanent-test-library-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+                className="px-3 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
+                title="Browse permanent 9-category statistical test library (18 datasets)"
+              >
+                <Layers className="w-3.5 h-3.5 text-blue-600" />
+                <span>Test Library (18)</span>
               </button>
               <button
                 onClick={() => {
@@ -1029,6 +1047,26 @@ export const DatasetManager: React.FC<DatasetManagerProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Permanent 9-Category Benchmark Test Library */}
+      <TestLibraryPanel
+        currentDatasetId={currentDataset.id}
+        onLoadEntry={(entry) => {
+          if (onLoadLibraryEntry) {
+            onLoadLibraryEntry(entry);
+          } else {
+            onSelectDataset(JSON.parse(JSON.stringify(entry.dataset)));
+          }
+          setCurrentPage(1);
+          setSearchTerm('');
+          showFeedback(`Loaded "${entry.dataset.name}" (${entry.categoryLabel} · ${entry.recommendedTestTitle}).`);
+        }}
+        onResetLibraryDataset={(datasetId) => {
+          onResetSampleDataset(datasetId);
+          setCurrentPage(1);
+          showFeedback('Restored pristine library dataset copy.');
+        }}
+      />
 
       {/* Research Questions & Formal Hypotheses Portfolio */}
       <div id="research-questions-section" className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">

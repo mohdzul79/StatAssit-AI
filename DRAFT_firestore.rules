@@ -1,0 +1,198 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pillar 0: Global Default-Deny Catch-All
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Pillar 3: Reusable Hardened Primitives
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isBootstrappedAdminEmail() {
+      return isVerifiedUser() && request.auth.token.email == 'mohdzul@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdminEmail() || (
+        isVerifiedUser() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Pillar 2 & 5: Nested Message Map Blueprint Validation
+    function isValidMessageMap(msg) {
+      return msg is map
+        && msg.keys().hasAll(['subject', 'text'])
+        && msg.keys().hasOnly(['subject', 'text', 'html'])
+        && msg.subject is string && msg.subject.size() >= 1 && msg.subject.size() <= 200
+        && msg.text is string && msg.text.size() >= 1 && msg.text.size() <= 10000
+        && (!('html' in msg) || (msg.html is string && msg.html.size() <= 20000));
+    }
+
+    // Pillar 2 & 6: Delivery Sub-Object State Blueprint Validation
+    function isValidDeliveryMap(del) {
+      return del is map
+        && del.keys().hasAll(['state', 'attempts'])
+        && del.keys().hasOnly([
+          'state', 'attempts', 'info', 'error',
+          'gmailMessageId', 'gmailThreadId', 'startTime', 'endTime'
+        ])
+        && del.state in ['PENDING', 'PROCESSING', 'SUCCESS', 'ERROR']
+        && del.attempts is int && del.attempts >= 0 && del.attempts <= 20
+        && (!('info' in del) || (del.info is string && del.info.size() <= 1000))
+        && (!('error' in del) || (del.error is string && del.error.size() <= 1000))
+        && (!('gmailMessageId' in del) || (del.gmailMessageId is string && del.gmailMessageId.size() <= 128))
+        && (!('gmailThreadId' in del) || (del.gmailThreadId is string && del.gmailThreadId.size() <= 128))
+        && (!('startTime' in del) || del.startTime is timestamp)
+        && (!('endTime' in del) || del.endTime is timestamp);
+    }
+
+    // Pillar 2, 3, 5: Full Document Shape & Size Validation
+    function isValidEmailDoc(data) {
+      return data.keys().hasAll([
+        'to', 'collectionName', 'ticketId', 'category',
+        'message', 'delivery', 'senderUid', 'senderName',
+        'senderEmail', 'createdAt', 'updatedAt'
+      ])
+      && data.keys().hasOnly([
+        'to', 'replyTo', 'collectionName', 'ticketId', 'category',
+        'message', 'delivery', 'senderUid', 'senderName',
+        'senderEmail', 'attachmentNames', 'createdAt', 'updatedAt'
+      ])
+      && data.to is list && data.to.size() >= 1 && data.to.size() <= 5
+      && data.to[0] is string && data.to[0].size() >= 3 && data.to[0].size() <= 160
+      && (!('replyTo' in data) || (data.replyTo is string && data.replyTo.size() >= 3 && data.replyTo.size() <= 160))
+      && data.collectionName in ['mail', 'contact_emails', 'email_queue']
+      && data.ticketId is string && data.ticketId.size() >= 3 && data.ticketId.size() <= 64 && data.ticketId.matches('^[a-zA-Z0-9_\\-]+$')
+      && data.category is string && data.category.size() >= 1 && data.category.size() <= 32
+      && isValidMessageMap(data.message)
+      && isValidDeliveryMap(data.delivery)
+      && data.senderUid is string && data.senderUid.size() >= 1 && data.senderUid.size() <= 128
+      && data.senderName is string && data.senderName.size() >= 1 && data.senderName.size() <= 120
+      && data.senderEmail is string && data.senderEmail.size() >= 3 && data.senderEmail.size() <= 160
+      && (!('attachmentNames' in data) || (
+        data.attachmentNames is list
+        && data.attachmentNames.size() <= 4
+        && (data.attachmentNames.size() == 0 || (data.attachmentNames[0] is string && data.attachmentNames[0].size() <= 160))
+      ))
+      && data.createdAt is timestamp
+      && data.updatedAt is timestamp;
+    }
+
+    function isValidDeliveryTransition(prevDel, nextDel) {
+      return nextDel.attempts >= prevDel.attempts && (
+        (prevDel.state == 'PENDING' && nextDel.state in ['PROCESSING', 'SUCCESS', 'ERROR']) ||
+        (prevDel.state == 'PROCESSING' && nextDel.state in ['SUCCESS', 'ERROR']) ||
+        (prevDel.state == 'ERROR' && nextDel.state in ['PENDING', 'PROCESSING'])
+      );
+    }
+
+    // Parameterized Gate Functions (Pillar 4, 6, 8)
+    function canGetEmailDoc(docId) {
+      return isValidId(docId) && isSignedIn() && (existing().senderUid == request.auth.uid || isAdmin());
+    }
+
+    // Pillar 8: No get() or exists() inside allow list
+    function canListEmailDoc() {
+      return isSignedIn() && (existing().senderUid == request.auth.uid || isBootstrappedAdminEmail());
+    }
+
+    function canCreateEmailDoc(docId, expectedCollection) {
+      return isVerifiedUser()
+        && isValidId(docId)
+        && isValidEmailDoc(incoming())
+        && incoming().senderUid == request.auth.uid
+        && incoming().collectionName == expectedCollection
+        && incoming().delivery.state == 'PENDING'
+        && incoming().delivery.attempts == 0
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+    }
+
+    function canUpdateEmailDoc(docId) {
+      return isVerifiedUser()
+        && isValidId(docId)
+        && isValidEmailDoc(incoming())
+        && incoming().senderUid == existing().senderUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().to == existing().to
+        && incoming().ticketId == existing().ticketId
+        && incoming().collectionName == existing().collectionName
+        && incoming().updatedAt == request.time
+        && (
+          isAdmin()
+          || (
+            existing().senderUid == request.auth.uid
+            && existing().delivery.state != 'SUCCESS'
+            && isValidDeliveryTransition(existing().delivery, incoming().delivery)
+            && (
+              incoming().diff(existing()).affectedKeys().hasOnly(['delivery', 'updatedAt'])
+              || (
+                existing().delivery.state == 'ERROR'
+                && incoming().delivery.state == 'PENDING'
+                && incoming().diff(existing()).affectedKeys().hasOnly(['delivery', 'message', 'updatedAt'])
+              )
+            )
+          )
+        );
+    }
+
+    // Collection 1: /mail/{docId}
+    match /mail/{docId} {
+      allow get: if canGetEmailDoc(docId);
+      allow list: if canListEmailDoc();
+      allow create: if canCreateEmailDoc(docId, 'mail');
+      allow update: if canUpdateEmailDoc(docId);
+      allow delete: if isAdmin() && isValidId(docId);
+    }
+
+    // Collection 2: /contact_emails/{docId}
+    match /contact_emails/{docId} {
+      allow get: if canGetEmailDoc(docId);
+      allow list: if canListEmailDoc();
+      allow create: if canCreateEmailDoc(docId, 'contact_emails');
+      allow update: if canUpdateEmailDoc(docId);
+      allow delete: if isAdmin() && isValidId(docId);
+    }
+
+    // Collection 3: /email_queue/{docId}
+    match /email_queue/{docId} {
+      allow get: if canGetEmailDoc(docId);
+      allow list: if canListEmailDoc();
+      allow create: if canCreateEmailDoc(docId, 'email_queue');
+      allow update: if canUpdateEmailDoc(docId);
+      allow delete: if isAdmin() && isValidId(docId);
+    }
+
+    // Collection 4: /test/{docId} (Boot connection probe)
+    match /test/{docId} {
+      allow get: if isValidId(docId);
+      allow list, create, update, delete: if false;
+    }
+
+    // Collection 5: /admins/{uid} (Read-only RBAC lookup)
+    match /admins/{uid} {
+      allow get: if isSignedIn() && request.auth.uid == uid && isValidId(uid);
+      allow list, create, update, delete: if false;
+    }
+  }
+}

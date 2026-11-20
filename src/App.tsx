@@ -28,6 +28,7 @@ import { validateDatasetForTest } from './utils/datasetValidation';
 
 import { Dataset, StatisticalTestType, StatisticalResult, VariableType, ResearchQuestion } from './types/stats';
 import { SAMPLE_DATASETS } from './data/sampleDatasets';
+import { PERMANENT_TEST_LIBRARY, TestLibraryEntry } from './data/testLibraryDatasets';
 import { autoDraftResearchQuestion } from './utils/hypothesisHelper';
 import {
   computeDescriptiveStats,
@@ -57,10 +58,11 @@ export default function App() {
   // Main & Front Page default is 'landing'
   const [activeTab, setActiveTab] = useState<'landing' | 'data' | 'analysis' | 'apa-report' | 'wizard'>('landing');
   
-  // Available datasets in-memory (pre-populated with tailored datasets for all statistical tests)
+  // Available datasets in-memory (pre-populated with tailored datasets + permanent 9-category test library)
   const [availableDatasets, setAvailableDatasets] = useState<Dataset[]>(() => {
     const tailored = Object.values(TEST_STUDY_PRESETS).map((p) => p.dataset);
-    return [...tailored, ...JSON.parse(JSON.stringify(SAMPLE_DATASETS))];
+    const library = JSON.parse(JSON.stringify(PERMANENT_TEST_LIBRARY.map((e) => e.dataset)));
+    return [...tailored, ...library, ...JSON.parse(JSON.stringify(SAMPLE_DATASETS))];
   });
   const [currentDatasetId, setCurrentDatasetId] = useState<string>(
     () => TEST_STUDY_PRESETS['independent_ttest'].dataset.id
@@ -113,7 +115,6 @@ export default function App() {
   const [isIpProtectionOpen, setIsIpProtectionOpen] = useState(false);
   const [isLearningCentreOpen, setIsLearningCentreOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
-  const [showQuickstartBanner, setShowQuickstartBanner] = useState(true);
 
   // Open Access Global Profile state (100% Free & Open Access)
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(MOHDZUL_ADMIN_PROFILE);
@@ -293,8 +294,42 @@ export default function App() {
     setCurrentDatasetId(clone.id);
   };
 
+  const handleLoadLibraryEntry = (entry: TestLibraryEntry) => {
+    const pristineDataset: Dataset = JSON.parse(JSON.stringify(entry.dataset));
+    setAvailableDatasets((prev) => {
+      const idx = prev.findIndex((d) => d.id === pristineDataset.id);
+      if (idx >= 0) {
+        const next = [...prev];
+        next[idx] = pristineDataset;
+        return next;
+      }
+      return [pristineDataset, ...prev];
+    });
+    setCurrentDatasetId(pristineDataset.id);
+    setSelectedTest(entry.recommendedTest);
+
+    if (entry.recommendedDv) setSelectedDV(entry.recommendedDv);
+    if (entry.recommendedIv) setSelectedIV(entry.recommendedIv);
+    if (entry.recommendedGroup1) setSelectedGroup1(entry.recommendedGroup1);
+    if (entry.recommendedGroup2) setSelectedGroup2(entry.recommendedGroup2);
+    if (entry.recommendedSecondVar) setSelectedSecondVar(entry.recommendedSecondVar);
+    if (entry.recommendedMultiVars) setSelectedMultiVars(entry.recommendedMultiVars);
+    if (entry.recommendedTestValue !== undefined) setOneSampleTestValue(entry.recommendedTestValue);
+    if (entry.correlationMethod) setCorrelationMethod(entry.correlationMethod);
+
+    setActiveResearchQuestion(pristineDataset.researchQuestions?.[0] || entry.researchQuestion);
+    setPresetStudyBanner({
+      testTitle: `${entry.categoryLabel} · ${entry.recommendedTestTitle}`,
+      datasetName: pristineDataset.name,
+      explanation: `${entry.statisticalProfile}. ${entry.diagnosticFocus}`,
+    });
+  };
+
   const handleResetSampleDataset = (datasetId: string) => {
-    const original = SAMPLE_DATASETS.find((s) => s.id === datasetId);
+    const libOriginal = PERMANENT_TEST_LIBRARY.find((e) => e.dataset.id === datasetId)?.dataset;
+    const sampleOriginal = SAMPLE_DATASETS.find((s) => s.id === datasetId);
+    const presetOriginal = Object.values(TEST_STUDY_PRESETS).find((p) => p.dataset.id === datasetId)?.dataset;
+    const original = libOriginal || sampleOriginal || presetOriginal;
     if (original) {
       const pristine = JSON.parse(JSON.stringify(original));
       setAvailableDatasets((prev) =>
@@ -504,7 +539,8 @@ export default function App() {
           res = computeFriedmanTest(currentDataset.data, vars);
           break;
         }
-        case 'regression': {
+        case 'regression':
+        case 'multiple_regression': {
           const ivs = selectedMultiVars.filter((v) => v !== selectedDV);
           res = computeMultipleRegression(
             currentDataset.data,
@@ -690,40 +726,6 @@ export default function App() {
         <>
           {/* Main Workspace Stage */}
           <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* First-Time User Onboarding Banner */}
-        {showQuickstartBanner && (
-          <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-sm font-bold text-slate-900">
-                    First Time Using StatAssist AI?
-                  </h3>
-                  <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
-                    Quickstart Guide
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 self-end md:self-auto shrink-0 flex-wrap">
-              <button
-                type="button"
-                onClick={() => setIsUserGuideOpen(true)}
-                className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-2xs cursor-pointer whitespace-nowrap"
-              >
-                Step-by-Step Checklist
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowQuickstartBanner(false)}
-                className="px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-800 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
-              >
-                Dismiss
-              </button>
-            </div>
-          </div>
-        )}
         {/* View 1: Selecting Test View (Empirical Methodology Test Selector - Priority 1 & Default) */}
         {activeTab === 'wizard' && (
           <SelectingTestView
@@ -764,6 +766,7 @@ export default function App() {
             onSelectTestAndStudy={(test) => applyPresetStudyForTest(test, false)}
             onNavigateToSelectingTest={() => setActiveTab('wizard')}
             onOpenGoogleDrive={() => setIsGoogleDriveOpen(true)}
+            onLoadLibraryEntry={handleLoadLibraryEntry}
           />
         )}
 
@@ -865,6 +868,9 @@ export default function App() {
 
                   <ApaManuscriptGenerator
                     result={currentResult}
+                    dataset={currentDataset}
+                    activeResearchQuestion={activeResearchQuestion}
+                    alphaLevel={alphaLevel}
                     defaultResearchQuestion={activeResearchQuestion?.question || ''}
                     onOpenNotebookLMSync={() => setIsNotebookLMSyncOpen(true)}
                   />
@@ -886,10 +892,10 @@ export default function App() {
               type="button"
               onClick={() => setIsIpProtectionOpen(true)}
               className="inline-flex items-center gap-1.5 font-mono font-semibold transition-all px-3 py-1 rounded-full border text-xs cursor-pointer text-slate-600 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border-slate-200 hover:border-blue-300 group"
-              title="StatAssist AI Copyright 2026 — View Intellectual Property, Copyright & Trade Secret Protections"
+              title="Copyright 2026 — View Intellectual Property, Copyright & Trade Secret Protections"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0 group-hover:scale-110 transition-transform" />
-              <span>StatAssist AI Copyright 2026</span>
+              <span>Copyright 2026</span>
             </button>
           </div>
 
@@ -905,15 +911,41 @@ export default function App() {
               <span>Learning Centre</span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => setIsContactOpen(true)}
-              className="inline-flex items-center gap-1.5 font-medium transition-all px-3 py-1 rounded-full border text-xs cursor-pointer text-slate-700 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border-slate-200 hover:border-blue-300 group"
-              title="Support and enquiries"
+            <a
+              href="https://www.youtube.com/@StatAssistAI"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="YouTube"
+              title="YouTube (@StatAssistAI)"
+              className="inline-flex items-center justify-center p-1.5 rounded-full border text-slate-500 bg-slate-50 hover:bg-red-50 hover:text-red-600 border-slate-200 hover:border-red-300 transition-all"
             >
-              <HelpCircle className="w-3.5 h-3.5 text-slate-500 group-hover:text-blue-600 shrink-0 transition-colors" />
-              <span>Contact</span>
-            </button>
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-3.5 h-3.5 shrink-0"
+                aria-hidden="true"
+              >
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z" />
+              </svg>
+            </a>
+
+            <a
+              href="https://www.facebook.com/mohd.zulhisam.7"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              title="Facebook"
+              className="inline-flex items-center justify-center p-1.5 rounded-full border text-slate-500 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border-slate-200 hover:border-blue-300 transition-all"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-3.5 h-3.5 shrink-0"
+                aria-hidden="true"
+              >
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073Z" />
+              </svg>
+            </a>
           </div>
 
           {/* PayPal Hosted SDK Container (supports dynamic Hosted Buttons injection) */}
@@ -1030,6 +1062,7 @@ export default function App() {
         onClose={() => setIsContactOpen(false)}
         defaultEmail=""
         defaultName=""
+        currentUserEmail={currentUser?.email || ''}
         currentTest={selectedTest}
         datasetStats={{
           hasData: currentDataset.data.length > 0,

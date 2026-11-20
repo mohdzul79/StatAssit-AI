@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "EmailDispatchDocument": {
+      "title": "EmailDispatchDocument",
+      "description": "Cloud Firestore trigger-email document that stores recipient metadata, composed subject/body content, sender attribution, and real-time Gmail delivery state.",
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "array",
+          "description": "Bounded list (1-5) of destination email addresses."
+        },
+        "replyTo": {
+          "type": "string",
+          "format": "email",
+          "minLength": 3,
+          "maxLength": 160,
+          "description": "Optional Reply-To email address for the composed message."
+        },
+        "collectionName": {
+          "type": "string",
+          "enum": ["mail", "contact_emails", "email_queue"],
+          "description": "Target Firestore collection where the trigger document resides."
+        },
+        "ticketId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique tracking reference ID."
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "Contact inquiry category."
+        },
+        "message": {
+          "type": "object",
+          "description": "Email content payload containing subject (1-200 chars), text (1-10000 chars), and optional html (<=20000 chars)."
+        },
+        "delivery": {
+          "type": "object",
+          "description": "Lifecycle tracking sub-object with state (PENDING|PROCESSING|SUCCESS|ERROR), attempts (0-20), info, error, gmailMessageId, gmailThreadId, startTime, endTime."
+        },
+        "senderUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Authenticated Firebase UID of the document creator."
+        },
+        "senderName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Display name of the sender."
+        },
+        "senderEmail": {
+          "type": "string",
+          "format": "email",
+          "minLength": 3,
+          "maxLength": 160,
+          "description": "Verified email address of the sender."
+        },
+        "attachmentNames": {
+          "type": "array",
+          "description": "Optional bounded list (<=4) of attached filenames (<=160 chars each)."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp enforced via request.time."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp enforced via request.time."
+        }
+      },
+      "required": [
+        "to",
+        "collectionName",
+        "ticketId",
+        "category",
+        "message",
+        "delivery",
+        "senderUid",
+        "senderName",
+        "senderEmail",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "TestConnectionDocument": {
+      "title": "TestConnectionDocument",
+      "description": "Read-only connection probe document.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "maxLength": 32,
+          "description": "Probe status marker."
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/mail/{docId}": {
+      "schema": {
+        "$ref": "#/entities/EmailDispatchDocument"
+      },
+      "description": "Primary Trigger Email collection: documents written here compose and send outbound emails via Gmail."
+    },
+    "/contact_emails/{docId}": {
+      "schema": {
+        "$ref": "#/entities/EmailDispatchDocument"
+      },
+      "description": "Support & Contact email queue collection triggering outbound email composition."
+    },
+    "/email_queue/{docId}": {
+      "schema": {
+        "$ref": "#/entities/EmailDispatchDocument"
+      },
+      "description": "General outbound email queue collection monitored for document writes."
+    },
+    "/test/{docId}": {
+      "schema": {
+        "$ref": "#/entities/TestConnectionDocument"
+      },
+      "description": "Read-only boot connectivity probe document for testConnection()."
+    }
+  }
+}

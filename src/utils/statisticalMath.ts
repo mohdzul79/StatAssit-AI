@@ -45,6 +45,23 @@ import {
   ContingencyCell,
 } from '../types/stats';
 
+// --- Safe Numeric Cell Parsing (prevents null / '' -> 0 coercion) ---
+export function parseNumericCell(val: unknown): number {
+  if (val === null || val === undefined) return NaN;
+  if (typeof val === 'number') return isFinite(val) ? val : NaN;
+  const trimmed = String(val).trim();
+  if (
+    trimmed === '' ||
+    trimmed.toLowerCase() === 'null' ||
+    trimmed.toLowerCase() === 'na' ||
+    trimmed.toLowerCase() === 'nan'
+  ) {
+    return NaN;
+  }
+  const n = Number(trimmed);
+  return isFinite(n) ? n : NaN;
+}
+
 // --- Precise Distribution Special Functions ---
 
 // Lanczos approximation for Gamma function
@@ -344,7 +361,7 @@ export function computeDescriptiveStats(
   variables: string[]
 ): DescriptiveStatsResult {
   const items: DescriptiveStatsItem[] = variables.map((varName) => {
-    const vals = data.map((d) => Number(d[varName])).filter((v) => !isNaN(v));
+    const vals = data.map((d) => parseNumericCell(d[varName])).filter((v) => !isNaN(v));
     return calculateDescriptive(vals, varName);
   });
   return { type: 'descriptive', items };
@@ -408,12 +425,12 @@ export function computeIndependentTTest(
 
   const g1Data = data
     .filter((d) => String(d[groupVar]) === g1Name)
-    .map((d) => Number(d[dependentVar]))
+    .map((d) => parseNumericCell(d[dependentVar]))
     .filter((v) => !isNaN(v));
 
   const g2Data = data
     .filter((d) => String(d[groupVar]) === g2Name)
-    .map((d) => Number(d[dependentVar]))
+    .map((d) => parseNumericCell(d[dependentVar]))
     .filter((v) => !isNaN(v));
 
   const desc1 = calculateDescriptive(g1Data, g1Name);
@@ -494,8 +511,8 @@ export function computePairedTTest(
 ): PairedTTestResult {
   const pairs: { a: number; b: number; diff: number }[] = [];
   data.forEach((row) => {
-    const a = Number(row[var1]);
-    const b = Number(row[var2]);
+    const a = parseNumericCell(row[var1]);
+    const b = parseNumericCell(row[var2]);
     if (!isNaN(a) && !isNaN(b)) {
       pairs.push({ a, b, diff: a - b });
     }
@@ -560,7 +577,7 @@ export function computeOneWayAnova(
   const groupMap: Record<string, number[]> = {};
   data.forEach((row) => {
     const g = String(row[factorVar]);
-    const val = Number(row[dependentVar]);
+    const val = parseNumericCell(row[dependentVar]);
     if (g && !isNaN(val)) {
       if (!groupMap[g]) groupMap[g] = [];
       groupMap[g].push(val);
@@ -733,8 +750,8 @@ export function computeMultipleRegression(
 ): RegressionResult {
   const completeRows: { y: number; x: number[] }[] = [];
   data.forEach((row) => {
-    const yVal = Number(row[dependentVar]);
-    const xVals = independentVars.map((v) => Number(row[v]));
+    const yVal = parseNumericCell(row[dependentVar]);
+    const xVals = independentVars.map((v) => parseNumericCell(row[v]));
     if (!isNaN(yVal) && xVals.every((v) => !isNaN(v))) {
       completeRows.push({ y: yVal, x: xVals });
     }
@@ -903,8 +920,8 @@ export function computeCorrelationMatrix(
 
       const pairs: [number, number][] = [];
       data.forEach((row) => {
-        const x = Number(row[v1]);
-        const y = Number(row[v2]);
+        const x = parseNumericCell(row[v1]);
+        const y = parseNumericCell(row[v2]);
         if (!isNaN(x) && !isNaN(y)) {
           pairs.push([x, y]);
         }
@@ -1074,8 +1091,8 @@ export function computeOneSampleTTest(
   testValue: number = 0
 ): OneSampleTTestResult {
   const values = data
-    .map((r) => Number(r[variable]))
-    .filter((v) => !isNaN(v) && v !== null);
+    .map((r) => parseNumericCell(r[variable]))
+    .filter((v) => !isNaN(v));
 
   const n = values.length;
   if (n === 0) {
@@ -1170,7 +1187,7 @@ export function computeMannWhitneyTest(
 
   data.forEach((row) => {
     const grp = String(row[groupVar]);
-    const val = Number(row[dependentVar]);
+    const val = parseNumericCell(row[dependentVar]);
     if (!isNaN(val)) {
       if (grp === g1) g1Values.push(val);
       else if (grp === g2) g2Values.push(val);
@@ -1231,8 +1248,9 @@ export function computeMannWhitneyTest(
   const totalN = n1 + n2;
   const sigmaU = Math.sqrt((n1 * n2 * (totalN + 1)) / 12);
   const z = sigmaU > 0 ? (u - eu + 0.5) / sigmaU : 0;
-  const p = 2 * (1 - (0.5 * (1 + Math.sign(z) * Math.sqrt(1 - Math.exp(-2 * z * z / Math.PI))))); // Error function approx
-  const clampedP = Math.max(0.0001, Math.min(1.0, 2 * (1 - (0.5 * (1 + (z < 0 ? -1 : 1) * Math.sqrt(1 - Math.exp(-z * z * (4 / Math.PI + 0.147 * z * z) / (1 + 0.147 * z * z))))))));
+  const absZ = Math.abs(z);
+  const twoTailedP = 2 * (1 - 0.5 * (1 + Math.sqrt(1 - Math.exp(-absZ * absZ * (4 / Math.PI + 0.147 * absZ * absZ) / (1 + 0.147 * absZ * absZ)))));
+  const clampedP = Math.max(0.0001, Math.min(1.0, twoTailedP));
 
   // Rank-Biserial correlation r = 1 - 2U / (n1*n2)
   const rankBiserialR = (n1 * n2 > 0) ? 1 - (2 * u) / (n1 * n2) : 0;
@@ -1260,8 +1278,8 @@ export function computeWilcoxonSignedTest(
   const pairs: { v1: number; v2: number; diff: number }[] = [];
 
   data.forEach((row) => {
-    const v1 = Number(row[var1]);
-    const v2 = Number(row[var2]);
+    const v1 = parseNumericCell(row[var1]);
+    const v2 = parseNumericCell(row[var2]);
     if (!isNaN(v1) && !isNaN(v2)) {
       pairs.push({ v1, v2, diff: v2 - v1 });
     }
@@ -1317,8 +1335,9 @@ export function computeWilcoxonSignedTest(
   const ew = (nEffective * (nEffective + 1)) / 4;
   const sigmaW = Math.sqrt((nEffective * (nEffective + 1) * (2 * nEffective + 1)) / 24);
   const z = sigmaW > 0 ? (w - ew + 0.5) / sigmaW : 0;
-
-  const clampedP = Math.max(0.0001, Math.min(1.0, 2 * (1 - (0.5 * (1 + (z < 0 ? -1 : 1) * Math.sqrt(1 - Math.exp(-z * z * (4 / Math.PI + 0.147 * z * z) / (1 + 0.147 * z * z))))))));
+  const absZ = Math.abs(z);
+  const twoTailedP = 2 * (1 - 0.5 * (1 + Math.sqrt(1 - Math.exp(-absZ * absZ * (4 / Math.PI + 0.147 * absZ * absZ) / (1 + 0.147 * absZ * absZ)))));
+  const clampedP = Math.max(0.0001, Math.min(1.0, twoTailedP));
   const effectSizeR = nTotal > 0 ? Math.abs(z) / Math.sqrt(nTotal) : 0;
 
   return {
@@ -1349,7 +1368,7 @@ export function computeKruskalWallisTest(
 
   data.forEach((row) => {
     const grp = String(row[groupVar]);
-    const val = Number(row[dependentVar]);
+    const val = parseNumericCell(row[dependentVar]);
     if (!isNaN(val) && grp && grp !== 'null' && grp !== 'undefined') {
       if (!groupMap[grp]) groupMap[grp] = [];
       groupMap[grp].push(val);
@@ -1441,8 +1460,8 @@ export function computeFriedmanTest(
 ): FriedmanResult {
   const completeRows: number[][] = [];
   data.forEach((row) => {
-    const vals = variables.map((v) => Number(row[v]));
-    if (vals.every((v) => !isNaN(v) && v !== null)) {
+    const vals = variables.map((v) => parseNumericCell(row[v]));
+    if (vals.every((v) => !isNaN(v))) {
       completeRows.push(vals);
     }
   });
@@ -1515,7 +1534,7 @@ export function computeTwoWayAnova(
 ): TwoWayAnovaResult {
   const completeRows: { y: number; a: string; b: string }[] = [];
   data.forEach((row) => {
-    const y = Number(row[dependentVar]);
+    const y = parseNumericCell(row[dependentVar]);
     const a = String(row[factorA] || '');
     const b = String(row[factorB] || '');
     if (!isNaN(y) && a && b && a !== 'null' && b !== 'null') {
@@ -1632,8 +1651,8 @@ export function computeRepeatedMeasuresAnova(
 ): RepeatedMeasuresAnovaResult {
   const completeRows: number[][] = [];
   data.forEach((row) => {
-    const vals = variables.map((v) => Number(row[v]));
-    if (vals.every((v) => !isNaN(v) && v !== null)) {
+    const vals = variables.map((v) => parseNumericCell(row[v]));
+    if (vals.every((v) => !isNaN(v))) {
       completeRows.push(vals);
     }
   });
@@ -1750,8 +1769,8 @@ export function computeAncova(
 ): AncovaResult {
   const completeRows: { y: number; g: string; x: number }[] = [];
   data.forEach((row) => {
-    const y = Number(row[dependentVar]);
-    const x = Number(row[covariateVar]);
+    const y = parseNumericCell(row[dependentVar]);
+    const x = parseNumericCell(row[covariateVar]);
     const g = String(row[groupVar] || '');
     if (!isNaN(y) && !isNaN(x) && g && g !== 'null' && g !== 'undefined') {
       completeRows.push({ y, g, x });
@@ -1870,7 +1889,7 @@ export function computeBinaryLogisticRegression(
 
   data.forEach((row) => {
     const rawY = String(row[dependentVar]);
-    const xVals = independentVars.map((v) => Number(row[v]));
+    const xVals = independentVars.map((v) => parseNumericCell(row[v]));
     if (xVals.every((v) => !isNaN(v))) {
       // 1 for event, 0 for reference
       const yBin = rawY.toLowerCase() === targetEvent.toLowerCase() || rawY === '1' || rawY === 'true' ? 1 : 0;
@@ -2042,8 +2061,8 @@ export function computeCronbachAlpha(
 ): CronbachAlphaResult {
   const completeRows: number[][] = [];
   data.forEach((row) => {
-    const vals = items.map((col) => Number(row[col]));
-    if (vals.every((v) => !isNaN(v) && v !== null)) {
+    const vals = items.map((col) => parseNumericCell(row[col]));
+    if (vals.every((v) => !isNaN(v))) {
       completeRows.push(vals);
     }
   });

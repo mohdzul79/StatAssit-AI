@@ -16,6 +16,8 @@
  */
 
 import express from 'express';
+import http from 'http';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -257,25 +259,219 @@ app.get('/api/token-check', (_req, res) => {
 
 // Direct Contact Message Routing (Receiver locked to mohdzul@gmail.com)
 const CONTACT_RECEIVER = 'mohdzul@gmail.com';
-const contactInbox: {
+const CONTACT_DATA_DIR = path.join(__dirname, '.data');
+const CONTACT_STORE_PATH = path.join(CONTACT_DATA_DIR, 'contact-inbox.json');
+
+interface ContactReplyRecord {
+  id: string;
+  senderName: string;
+  senderEmail: string;
+  message: string;
+  isAdmin: boolean;
+  emailDispatched: boolean;
+  gmailMessageId?: string;
+  createdAt: string;
+}
+
+interface ContactMessageRecord {
   ticketId: string;
+  category: string;
   receiver: string;
   senderName: string;
   senderEmail: string;
   subject: string;
   details: string;
   attachments: { name: string; size: number; type: string }[];
+  status: 'new' | 'in_progress' | 'resolved';
+  emailDispatched: boolean;
+  emailError?: string;
+  gmailMessageId?: string;
+  gmailThreadId?: string;
+  authenticatedByGoogle?: boolean;
+  replies: ContactReplyRecord[];
   submittedAt: string;
-}[] = [];
+  updatedAt?: string;
+}
 
-app.post('/api/contact', (req, res) => {
+function loadContactInbox(): ContactMessageRecord[] {
   try {
-    const { subject, details, senderEmail, senderName, attachments } = req.body || {};
+    if (fs.existsSync(CONTACT_STORE_PATH)) {
+      const raw = fs.readFileSync(CONTACT_STORE_PATH, 'utf8');
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed.map((item) => ({
+          ...item,
+          status: item.status || 'new',
+          replies: Array.isArray(item.replies) ? item.replies : [],
+        }));
+      }
+    }
+  } catch {
+    // Start cleanly if store cannot be read
+  }
+  return [];
+}
+
+function persistContactInbox(records: ContactMessageRecord[]): void {
+  try {
+    if (!fs.existsSync(CONTACT_DATA_DIR)) {
+      fs.mkdirSync(CONTACT_DATA_DIR, { recursive: true });
+    }
+    fs.writeFileSync(CONTACT_STORE_PATH, JSON.stringify(records, null, 2), 'utf8');
+  } catch {
+    // Non-fatal persistence warning
+  }
+}
+
+const contactInbox: ContactMessageRecord[] = loadContactInbox();
+const contactSseClients = new Set<express.Response>();
+
+function broadcastContactEvent(eventType: string, payload: unknown): void {
+  const data = `event: ${eventType}\ndata: ${JSON.stringify(payload)}\n\n`;
+  for (const client of contactSseClients) {
+    try {
+      client.write(data);
+    } catch {
+      contactSseClients.delete(client);
+    }
+  }
+}
+
+function extractBearerToken(req: express.Request): string | null {
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith('Bearer ')) return null;
+  const token = header.slice('Bearer '.length).trim();
+  if (!token || token === 'open_access_token_mock') return null;
+  return token;
+}
+
+function encodeMimeHeaderUtf8(value: string): string {
+  return `=?utf-8?B?${Buffer.from(value, 'utf8').toString('base64')}?=`;
+}
+
+function sanitizeHeaderValue(value: string): string {
+  return value.replace(/[\r\n]+/g, ' ').trim();
+}
+
+async function dispatchGmailViaToken(
+  accessToken: string,
+  params: {
+    to: string;
+    replyTo?: string;
+    subject: string;
+    body: string;
+    html?: string;
+    threadId?: string;
+  }
+): Promise<{ id: string; threadId: string }> {
+  const safeTo = sanitizeHeaderValue(params.to);
+  const safeReply = params.replyTo ? sanitizeHeaderValue(params.replyTo) : undefined;
+  const safeSubject = sanitizeHeaderValue(params.subject);
+
+  const lines: string[] = [
+    `To: ${safeTo}`,
+    ...(safeReply ? [`Reply-To: ${safeReply}`] : []),
+    `Subject: ${encodeMimeHeaderUtf8(safeSubject)}`,
+    'MIME-Version: 1.0',
+  ];
+
+  const encodedTextBody = Buffer.from(params.body, 'utf8').toString('base64');
+
+  if (params.html) {
+    const boundary = `statassist_${Date.now().toString(36)}`;
+    const encodedHtmlBody = Buffer.from(params.html, 'utf8').toString('base64');
+    lines.push(
+      `Content-Type: multipart/alternative; boundary="${boundary}"`,
+      '',
+      `--${boundary}`,
+      'Content-Type: text/plain; charset=UTF-8',
+      'Content-Transfer-Encoding: base64',
+      '',
+      encodedTextBody,
+      '',
+      `--${boundary}`,
+      'Content-Type: text/html; charset=UTF-8',
+      'Content-Transfer-Encoding: base64',
+      '',
+      encodedHtmlBody,
+      '',
+      `--${boundary}--`
+    );
+  } else {
+    lines.push(
+      'Content-Type: text/plain; charset=UTF-8',
+      'Content-Transfer-Encoding: base64',
+      '',
+      encodedTextBody
+    );
+  }
+
+  const raw = Buffer.from(lines.join('\r\n'), 'utf8').toString('base64url');
+  const payload: Record<string, string> = { raw };
+  if (params.threadId) {
+    payload.threadId = params.threadId;
+  }
+
+  const gmailRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!gmailRes.ok) {
+    const errText = await gmailRes.text();
+    const error: any = new Error(`Gmail API returned ${gmailRes.status}: ${errText}`);
+    error.statusCode = gmailRes.status;
+    throw error;
+  }
+
+  return gmailRes.json();
+}
+
+app.get('/api/contact/stream', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders?.();
+
+  contactSseClients.add(res);
+  res.write(`event: init\ndata: ${JSON.stringify({ messages: contactInbox })}\n\n`);
+
+  const keepAlive = setInterval(() => {
+    try {
+      res.write(': keepalive\n\n');
+    } catch {
+      clearInterval(keepAlive);
+      contactSseClients.delete(res);
+    }
+  }, 25000);
+
+  req.on('close', () => {
+    clearInterval(keepAlive);
+    contactSseClients.delete(res);
+  });
+});
+
+app.post('/api/contact', async (req, res) => {
+  try {
+    const {
+      subject,
+      details,
+      senderEmail,
+      senderName,
+      category,
+      attachments,
+      requireGmailDelivery,
+    } = req.body || {};
 
     const cleanSubject = typeof subject === 'string' ? subject.trim() : '';
     const cleanDetails = typeof details === 'string' ? details.trim() : '';
     const cleanEmail = typeof senderEmail === 'string' ? senderEmail.trim() : '';
     const cleanName = typeof senderName === 'string' ? senderName.trim() : '';
+    const cleanCategory = typeof category === 'string' ? category.trim() : 'general';
 
     if (!cleanSubject || !cleanDetails || !cleanEmail || !cleanName) {
       return res.status(400).json({
@@ -287,28 +483,98 @@ app.post('/api/contact', (req, res) => {
       return res.status(400).json({ error: 'Please provide a valid email address.' });
     }
 
+    const bearerToken = extractBearerToken(req);
     const ticketId = `STA-${Math.floor(1000 + Math.random() * 9000)}`;
-    const record = {
+    const submittedAt = new Date().toISOString();
+    const safeAttachments = Array.isArray(attachments) ? attachments : [];
+
+    let emailDispatched = false;
+    let emailError: string | undefined;
+    let gmailMessageId: string | undefined;
+    let gmailThreadId: string | undefined;
+
+    if (bearerToken) {
+      const attachmentText =
+        safeAttachments.length > 0
+          ? `\nAttachments listed (${safeAttachments.length}): ${safeAttachments.map((a: any) => a.name).join(', ')}`
+          : '';
+      const emailBody = [
+        `StatAssist AI Contact Form Submission`,
+        `Ticket Reference: ${ticketId}`,
+        `Category: ${cleanCategory}`,
+        `From: ${cleanName} <${cleanEmail}>`,
+        `Submitted At: ${submittedAt}`,
+        ``,
+        `Message:`,
+        cleanDetails,
+        attachmentText,
+      ]
+        .filter(Boolean)
+        .join('\n');
+
+      try {
+        const gmailSent = await dispatchGmailViaToken(bearerToken, {
+          to: CONTACT_RECEIVER,
+          replyTo: `${cleanName} <${cleanEmail}>`,
+          subject: `[StatAssist AI Contact] ${cleanSubject} (${ticketId})`,
+          body: emailBody,
+        });
+        emailDispatched = true;
+        gmailMessageId = gmailSent.id;
+        gmailThreadId = gmailSent.threadId;
+      } catch (gmailErr: any) {
+        emailError = gmailErr?.message || 'Gmail API delivery failed.';
+        if (requireGmailDelivery) {
+          return res.status(gmailErr?.statusCode === 401 ? 401 : 502).json({
+            error:
+              gmailErr?.statusCode === 401
+                ? 'Your Google session expired. Please sign in with Google again and retry.'
+                : `Failed to send email via Gmail: ${emailError}`,
+          });
+        }
+      }
+    } else if (requireGmailDelivery) {
+      return res.status(401).json({
+        error: 'Google authentication is required to send directly via Gmail.',
+      });
+    }
+
+    const record: ContactMessageRecord = {
       ticketId,
+      category: cleanCategory,
       receiver: CONTACT_RECEIVER,
       senderName: cleanName,
       senderEmail: cleanEmail,
       subject: cleanSubject,
       details: cleanDetails,
-      attachments: Array.isArray(attachments) ? attachments : [],
-      submittedAt: new Date().toISOString(),
+      attachments: safeAttachments,
+      status: 'new',
+      emailDispatched,
+      emailError,
+      gmailMessageId,
+      gmailThreadId,
+      authenticatedByGoogle: Boolean(bearerToken),
+      replies: [],
+      submittedAt,
     };
 
     contactInbox.unshift(record);
-    if (contactInbox.length > 100) {
+    if (contactInbox.length > 200) {
       contactInbox.pop();
     }
+    persistContactInbox(contactInbox);
+    broadcastContactEvent('contact_created', record);
 
     return res.json({
       success: true,
       ticketId,
       receiver: CONTACT_RECEIVER,
+      emailDispatched,
+      emailError,
+      gmailMessageId,
+      gmailThreadId,
       submittedAt: record.submittedAt,
+      record,
     });
   } catch (err: any) {
     return res.status(500).json({
@@ -318,12 +584,258 @@ app.post('/api/contact', (req, res) => {
   }
 });
 
-app.get('/api/contact/inbox', (_req, res) => {
+// Compose and send an email directly from the contents of a Cloud Firestore document
+app.post('/api/firestore-email/send', async (req, res) => {
+  try {
+    const {
+      collectionName,
+      documentId,
+      ticketId,
+      to,
+      replyTo,
+      subject,
+      text,
+      html,
+      senderName,
+      senderEmail,
+      category,
+      attachmentNames,
+    } = req.body || {};
+
+    const cleanCollection = typeof collectionName === 'string' ? collectionName.trim() : '';
+    const cleanDocId = typeof documentId === 'string' ? documentId.trim() : '';
+    const cleanSubject = typeof subject === 'string' ? subject.trim() : '';
+    const cleanText = typeof text === 'string' ? text.trim() : '';
+    const cleanSenderName = typeof senderName === 'string' ? senderName.trim() : 'Researcher';
+    const cleanSenderEmail = typeof senderEmail === 'string' ? senderEmail.trim() : '';
+    const cleanCategory = typeof category === 'string' ? category.trim() : 'general';
+
+    if (!['mail', 'contact_emails', 'email_queue'].includes(cleanCollection) || !cleanDocId) {
+      return res.status(400).json({
+        error: 'Valid Cloud Firestore collectionName and documentId are required.',
+      });
+    }
+
+    const recipientList = Array.isArray(to)
+      ? to
+          .filter((item): item is string => typeof item === 'string')
+          .map((item) => item.trim())
+          .filter((item) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(item))
+      : [];
+
+    if (recipientList.length === 0 || !cleanSubject || !cleanText || !cleanSenderEmail) {
+      return res.status(400).json({
+        error: 'Firestore document must specify valid recipient(s), subject, text body, and senderEmail.',
+      });
+    }
+
+    const resolvedTicketId =
+      typeof ticketId === 'string' && ticketId.trim()
+        ? ticketId.trim()
+        : `STA-${Math.floor(1000 + Math.random() * 9000)}`;
+    const safeReplyTo =
+      typeof replyTo === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(replyTo.trim())
+        ? replyTo.trim()
+        : cleanSenderEmail;
+    const safeAttachmentNames = Array.isArray(attachmentNames)
+      ? attachmentNames.filter((n): n is string => typeof n === 'string').slice(0, 4)
+      : [];
+
+    const composedBody = [
+      cleanText,
+      '',
+      '---',
+      `Firestore Source: ${cleanCollection}/${cleanDocId}`,
+      `Reference ID: ${resolvedTicketId}`,
+      `Sender: ${cleanSenderName} <${cleanSenderEmail}>`,
+      ...(safeAttachmentNames.length > 0
+        ? [`Attachments: ${safeAttachmentNames.join(', ')}`]
+        : []),
+    ].join('\n');
+
+    const bearerToken = extractBearerToken(req);
+    let emailDispatched = false;
+    let emailError: string | undefined;
+    let gmailStatusCode: number | undefined;
+    let gmailMessageId: string | undefined;
+    let gmailThreadId: string | undefined;
+
+    if (bearerToken) {
+      try {
+        const gmailSent = await dispatchGmailViaToken(bearerToken, {
+          to: recipientList.join(', '),
+          replyTo: safeReplyTo,
+          subject: cleanSubject,
+          body: composedBody,
+          html: typeof html === 'string' && html.trim() ? html.trim() : undefined,
+        });
+        emailDispatched = true;
+        gmailMessageId = gmailSent.id;
+        gmailThreadId = gmailSent.threadId;
+      } catch (gmailErr: any) {
+        emailError = gmailErr?.message || 'Gmail API dispatch failed.';
+        gmailStatusCode = gmailErr?.statusCode;
+      }
+    }
+
+    const submittedAt = new Date().toISOString();
+    const record: ContactMessageRecord = {
+      ticketId: resolvedTicketId,
+      category: cleanCategory,
+      receiver: recipientList.join(', '),
+      senderName: cleanSenderName,
+      senderEmail: cleanSenderEmail,
+      subject: cleanSubject,
+      details: cleanText,
+      attachments: safeAttachmentNames.map((name) => ({
+        name,
+        size: 0,
+        type: 'application/octet-stream',
+      })),
+      status: 'new',
+      emailDispatched,
+      emailError,
+      gmailMessageId,
+      gmailThreadId,
+      authenticatedByGoogle: Boolean(bearerToken),
+      replies: [],
+      submittedAt,
+    };
+
+    contactInbox.unshift(record);
+    if (contactInbox.length > 200) {
+      contactInbox.pop();
+    }
+    persistContactInbox(contactInbox);
+    broadcastContactEvent('contact_created', record);
+
+    return res.json({
+      success: true,
+      collectionName: cleanCollection,
+      documentId: cleanDocId,
+      ticketId: resolvedTicketId,
+      receiver: recipientList.join(', '),
+      emailDispatched,
+      emailError,
+      gmailStatusCode,
+      gmailMessageId,
+      gmailThreadId,
+      composedFrom: {
+        collectionName: cleanCollection,
+        documentId: cleanDocId,
+        to: recipientList,
+        subject: cleanSubject,
+      },
+      record,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      error: 'Failed to compose and send email from Firestore document',
+      details: err?.message || 'Unexpected Firestore email composition error',
+    });
+  }
+});
+
+app.get('/api/contact/inbox', (req, res) => {
+  const filterEmail = typeof req.query.email === 'string' ? req.query.email.trim().toLowerCase() : '';
+  const messages = filterEmail && filterEmail !== CONTACT_RECEIVER.toLowerCase()
+    ? contactInbox.filter((m) => m.senderEmail.toLowerCase() === filterEmail)
+    : contactInbox;
+
   return res.json({
     receiver: CONTACT_RECEIVER,
-    count: contactInbox.length,
-    messages: contactInbox,
+    count: messages.length,
+    messages,
   });
+});
+
+app.post('/api/contact/:ticketId/reply', async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+    const { replyText, responderName, responderEmail, status } = req.body || {};
+    const cleanReply = typeof replyText === 'string' ? replyText.trim() : '';
+
+    if (!cleanReply) {
+      return res.status(400).json({ error: 'Reply message cannot be empty.' });
+    }
+
+    const ticket = contactInbox.find((t) => t.ticketId === ticketId);
+    if (!ticket) {
+      return res.status(404).json({ error: `Contact ticket ${ticketId} was not found.` });
+    }
+
+    const bearerToken = extractBearerToken(req);
+    let emailDispatched = false;
+    let gmailMessageId: string | undefined;
+
+    if (bearerToken) {
+      try {
+        const sent = await dispatchGmailViaToken(bearerToken, {
+          to: ticket.senderEmail,
+          replyTo: CONTACT_RECEIVER,
+          subject: `Re: [StatAssist AI Contact] ${ticket.subject} (${ticket.ticketId})`,
+          body: `Hello ${ticket.senderName},\n\n${cleanReply}\n\n---\nTicket Reference: ${ticket.ticketId}\nResponded by: ${responderName || 'Mohd Zulhisam'} (${responderEmail || CONTACT_RECEIVER})`,
+          threadId: ticket.gmailThreadId,
+        });
+        emailDispatched = true;
+        gmailMessageId = sent.id;
+      } catch (gmailErr: any) {
+        return res.status(gmailErr?.statusCode === 401 ? 401 : 502).json({
+          error:
+            gmailErr?.statusCode === 401
+              ? 'Google session expired. Please sign in with Google again before emailing your response.'
+              : `Failed to email response via Gmail: ${gmailErr?.message || 'Unknown Gmail error'}`,
+        });
+      }
+    }
+
+    const replyRecord: ContactReplyRecord = {
+      id: `rep-${Date.now()}`,
+      senderName: (typeof responderName === 'string' && responderName.trim()) || 'Mohd Zulhisam',
+      senderEmail: (typeof responderEmail === 'string' && responderEmail.trim()) || CONTACT_RECEIVER,
+      message: cleanReply,
+      isAdmin: true,
+      emailDispatched,
+      gmailMessageId,
+      createdAt: new Date().toISOString(),
+    };
+
+    ticket.replies.push(replyRecord);
+    ticket.status = status === 'resolved' || status === 'in_progress' ? status : 'in_progress';
+    ticket.updatedAt = new Date().toISOString();
+
+    persistContactInbox(contactInbox);
+    broadcastContactEvent('contact_updated', ticket);
+
+    return res.json({
+      success: true,
+      emailDispatched,
+      record: ticket,
+      reply: replyRecord,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      error: 'Failed to send response',
+      details: err?.message || 'Unexpected reply error',
+    });
+  }
+});
+
+app.patch('/api/contact/:ticketId/status', (req, res) => {
+  const { ticketId } = req.params;
+  const { status } = req.body || {};
+  if (status !== 'new' && status !== 'in_progress' && status !== 'resolved') {
+    return res.status(400).json({ error: 'Invalid ticket status.' });
+  }
+  const ticket = contactInbox.find((t) => t.ticketId === ticketId);
+  if (!ticket) {
+    return res.status(404).json({ error: `Contact ticket ${ticketId} was not found.` });
+  }
+  ticket.status = status;
+  ticket.updatedAt = new Date().toISOString();
+  persistContactInbox(contactInbox);
+  broadcastContactEvent('contact_updated', ticket);
+  return res.json({ success: true, record: ticket });
 });
 
 app.get('/api/tokens/available', (_req, res) => {
@@ -339,11 +851,16 @@ app.get('/api/tokens/available', (_req, res) => {
 // Vite middleware in dev or static files in production
 async function startServer() {
   const isProd = process.env.NODE_ENV === 'production';
+  const httpServer = http.createServer(app);
 
   if (!isProd) {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        hmr: { server: httpServer },
+        watch: null,
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);
@@ -354,7 +871,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`StatAssist AI server running on http://0.0.0.0:${PORT}`);
   });
 }

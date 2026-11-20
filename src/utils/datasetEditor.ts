@@ -87,7 +87,11 @@ export function resizeDatasetN(
   dataset.columns.forEach((col) => {
     if (col.type === 'continuous') {
       const numbers = dataset.data
-        .map((r) => Number(r[col.name]))
+        .map((r) => {
+          const v = r[col.name];
+          if (v === null || v === undefined || String(v).trim() === '') return NaN;
+          return Number(v);
+        })
         .filter((n) => !isNaN(n) && isFinite(n));
 
       if (numbers.length > 0) {
